@@ -44,6 +44,25 @@ Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+## Dataset
+
+This project uses the **HAM10000 dataset**, a widely used dermoscopic image dataset for skin lesion analysis.
+
+Dataset source:
+
+https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000
+
+The dataset contains **10,015 dermoscopic images** belonging to **seven diagnostic categories**:
+
+- Melanocytic nevi (NV)
+- Melanoma (MEL)
+- Benign keratosis (BKL)
+- Basal cell carcinoma (BCC)
+- Actinic keratoses (AKIEC)
+- Vascular lesions (VASC)
+- Dermatofibroma (DF)
+
+Images are used for preprocessing, segmentation, and classification experiments.
 
 ---
 ## Framework Architecture
