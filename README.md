@@ -30,3 +30,38 @@ The goal is to analyze how different preprocessing strategies influence segmenta
 The proposed framework follows a structured pipeline:
 
 ![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
+
+## Preprocessing Pipelines
+
+Four preprocessing pipelines are evaluated. The figure below shows the preprocessing steps for each pipeline applied to the same sample image:
+
+![Preprocessing Pipelines Comparison](docs/figures/preprocessing_comparison.png)
+
+### Pipeline 1 – Baseline
+- Image resizing
+- Intensity normalization
+
+### Pipeline 2 – Artifact Removal and Contrast Enhancement
+- Hair removal (black-hat transformation)
+- Inpainting
+- White balance correction
+- CLAHE contrast enhancement
+- Normalization
+
+### Pipeline 3 – Texture Enhancement
+- Resize 
+- Hair removal
+- Bilateral filtering
+- Wavelet-based enhancement
+- Gabor filter bank
+- Unsharp masking
+- Normalization
+
+### Pipeline 4 – Optimized Contrast Pipeline
+- DullRazor hair removal
+- Inpainting
+- Resize (256*256)
+- CLAHE enhancement
+- Intensity normalization
+
+Pipeline 4 produced the **best overall classification performance**.
