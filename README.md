@@ -167,7 +167,9 @@ Recall = \frac{TP}{TP + FN}
 \]
 
 A high recall means the model successfully identifies **most true lesion cases**, which is crucial for medical diagnosis.
-
+$$
+Recall = \frac{TP}{TP + FN}
+$$
 ---
 
 ### F1-score
