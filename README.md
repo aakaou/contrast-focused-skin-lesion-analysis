@@ -103,3 +103,101 @@ Segmentation performance is evaluated using the following metrics:
 
 
 These metrics provide a comprehensive evaluation of the segmentation model's ability to accurately delineate lesion boundaries before the classification stage.
+
+## Classification Models
+
+To evaluate the impact of preprocessing strategies on diagnostic performance, the framework tests **25 pretrained deep learning models** across the four preprocessing pipelines. These models include classical convolutional neural networks, lightweight architectures, and modern transformer-based networks.
+
+### Evaluated Models
+
+The following pretrained architectures were used for multi-class skin lesion classification:
+
+- VGG16
+- VGG19
+- ResNet18
+- ResNet34
+- ResNet50
+- ResNet101
+- ResNet152
+- DenseNet121
+- DenseNet161
+- DenseNet169
+- DenseNet201
+- InceptionV3
+- InceptionResNetV2
+- Xception
+- MobileNetV1
+- MobileNetV2
+- MobileNetV3 Small
+- MobileNetV3 Large
+- EfficientNetB0
+- EfficientNetB1
+- EfficientNetB2
+- EfficientNetB3
+- EfficientNetB4
+- EfficientNetB5
+- EfficientNetB6
+- EfficientNetB7
+
+These models were fine-tuned on dermoscopic images from the **HAM10000 dataset** to perform **seven-class skin lesion classification**.
+
+---
+
+## Classification Metrics
+
+Model performance is evaluated using standard metrics widely used in medical image classification.
+
+### Precision
+Precision measures the proportion of correctly predicted positive samples among all predicted positives.
+
+\[
+Precision = \frac{TP}{TP + FP}
+\]
+
+High precision indicates that the model produces **few false positives**, meaning predicted lesions are more likely to be correct.
+
+---
+
+### Recall (Sensitivity)
+
+Recall measures the proportion of actual positive samples that are correctly detected by the model.
+
+\[
+Recall = \frac{TP}{TP + FN}
+\]
+
+A high recall means the model successfully identifies **most true lesion cases**, which is crucial for medical diagnosis.
+
+---
+
+### F1-score
+
+The F1-score is the harmonic mean of precision and recall, providing a balanced evaluation when class distributions are uneven.
+
+\[
+F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+\]
+
+This metric is particularly useful in **medical classification tasks where both false positives and false negatives are important**.
+
+---
+
+### Accuracy
+
+Accuracy measures the proportion of correctly classified samples among all predictions.
+
+\[
+Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
+\]
+
+Although widely used, accuracy alone may not fully reflect model performance when datasets are imbalanced, which is why additional metrics such as **F1-score and recall** are also reported.
+
+---
+
+## Experimental Comparison
+
+The figure below compares the performance of the four preprocessing pipelines across all classification models using the four evaluation metrics.
+
+![Pipeline Comparison](figures/pipeline_model_comparison.png)
+
+The results show that **Pipeline 4 consistently achieves higher precision, recall, F1-score, and accuracy across most models**, with **EfficientNetB7 demonstrating the competitive overall performance**.
