@@ -35,7 +35,7 @@ The proposed framework follows a structured pipeline:
 
 Four preprocessing pipelines are evaluated. The figure below shows the preprocessing steps for each pipeline applied to the same sample image:
 
-![Preprocessing Pipelines Comparison](docs/figures/preprocessing_comparison.png)
+![Preprocessing Pipelines Comparison](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/f22579e3b6adebcea28066182f0aaadd977861db/preprocessing_steps_pipelines.png)
 
 ### Pipeline 1 – Baseline
 - Image resizing
