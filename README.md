@@ -146,7 +146,7 @@ These metrics provide a comprehensive evaluation of the segmentation model's abi
 
 ## Classification Models
 
-To evaluate the impact of preprocessing strategies on diagnostic performance, the framework tests **25 pretrained deep learning models** across the four preprocessing pipelines. These models include classical convolutional neural networks, lightweight architectures, and modern transformer-based networks.
+To evaluate the impact of preprocessing strategies on diagnostic performance, the framework tests **25 pretrained deep learning models** across the four preprocessing pipelines. These models include classical convolutional neural networks, lightweight architectures, and modern deep learning architectures.
 
 ### Evaluated Models
 
