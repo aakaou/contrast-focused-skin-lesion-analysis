@@ -145,16 +145,22 @@ These models were fine-tuned on dermoscopic images from the **HAM10000 dataset**
 
 ## Classification Metrics
 
-Model performance is evaluated using standard metrics widely used in medical image classification.
+The performance of each classification model is evaluated using several standard metrics commonly used in medical image analysis.
 
 ### Precision
-Precision measures the proportion of correctly predicted positive samples among all predicted positives.
 
-\[
+Precision measures the proportion of correctly predicted positive samples among all predicted positive samples.
+
+$$
 Precision = \frac{TP}{TP + FP}
-\]
+$$
 
-High precision indicates that the model produces **few false positives**, meaning predicted lesions are more likely to be correct.
+Where:
+
+- **TP** = True Positives  
+- **FP** = False Positives  
+
+A high precision indicates that the model produces **few false positive predictions**, meaning that predicted lesion classes are more likely to be correct.
 
 ---
 
@@ -162,21 +168,28 @@ High precision indicates that the model produces **few false positives**, meanin
 
 Recall measures the proportion of actual positive samples that are correctly detected by the model.
 
-\[
+$$
 Recall = \frac{TP}{TP + FN}
-\]
+$$
 
-A high recall means the model successfully identifies **most true lesion cases**, which is crucial for medical diagnosis.
+Where:
+
+- **TP** = True Positives  
+- **FN** = False Negatives  
+
+High recall is particularly important in medical diagnosis because it ensures that **most real lesion cases are detected by the system**.
+
+---
 
 ### F1-score
 
-The F1-score is the harmonic mean of precision and recall, providing a balanced evaluation when class distributions are uneven.
+The F1-score is the **harmonic mean of precision and recall**, providing a balanced evaluation when both false positives and false negatives must be considered.
 
-\[
+$$
 F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
-\]
+$$
 
-This metric is particularly useful in **medical classification tasks where both false positives and false negatives are important**.
+This metric is especially useful when the dataset contains **class imbalance**, which is common in medical imaging datasets such as HAM10000.
 
 ---
 
@@ -184,11 +197,18 @@ This metric is particularly useful in **medical classification tasks where both 
 
 Accuracy measures the proportion of correctly classified samples among all predictions.
 
-\[
+$$
 Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
-\]
+$$
 
-Although widely used, accuracy alone may not fully reflect model performance when datasets are imbalanced, which is why additional metrics such as **F1-score and recall** are also reported.
+Where:
+
+- **TP** = True Positives  
+- **TN** = True Negatives  
+- **FP** = False Positives  
+- **FN** = False Negatives  
+
+Accuracy provides a general indication of model performance, although it may not fully reflect classification quality in imbalanced datasets. Therefore, additional metrics such as **precision, recall, and F1-score** are also considered.
 
 ---
 
