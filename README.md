@@ -258,4 +258,4 @@ The figure below compares the performance of the four preprocessing pipelines ac
 
 ![Pipeline Comparison](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/01f5f75c7d2feb67b632df6b07cca5e8f8897f4b/comparison_pipelines.png)
 
-The results show that **Pipeline 4 consistently achieves higher precision, recall, F1-score, and accuracy across most models**, with **EfficientNetB7 demonstrating the competitive overall performance**.
+The results show that **Pipeline 4 consistently achieves higher precision, recall, F1-score, and accuracy across most models**, with **EfficientNetB7 demonstrating competitive overall performance**.
