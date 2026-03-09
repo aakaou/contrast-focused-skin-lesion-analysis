@@ -30,7 +30,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/aakaou/contrast-focused-skin-lesion-analysis.git
-cd contrast-focused-skin-lesion-analysis
+cd contrast-focused-skin-lesion-analysis```
 
 
 ---
