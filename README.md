@@ -65,3 +65,34 @@ Four preprocessing pipelines are evaluated. The figure below shows the preproces
 - Intensity normalization
 
 Pipeline 4 produced the **best overall classification performance**.
+
+## Segmentation Model
+
+Lesion segmentation is performed using a **U-Net convolutional neural network**, a widely adopted architecture in medical image analysis due to its ability to capture contextual information while preserving fine spatial details.
+
+### Architecture
+
+The segmentation network follows an **encoder–decoder structure**:
+
+- **Encoder:** Extracts hierarchical features from dermoscopic images using successive convolution and pooling layers.
+- **Decoder:** Reconstructs the segmentation mask by progressively upsampling feature maps.
+- **Skip Connections:** Direct links between encoder and decoder layers preserve high-resolution spatial information and improve lesion boundary detection.
+
+### Additional Enhancements
+
+To improve segmentation performance on dermoscopic images, the framework includes several enhancements:
+
+- **Sonar-inspired Background Transformation:** Enhances the contrast between lesion regions and surrounding skin, helping the network better identify lesion boundaries.
+- **Morphological Post-processing:** Applies operations such as opening, closing, and small-region removal to refine predicted masks and reduce segmentation noise.
+
+### Evaluation Metrics
+
+Segmentation performance is evaluated using the following metrics:
+
+- **Dice Coefficient:** Measures the overlap between predicted masks and ground truth masks.
+- **Intersection over Union (IoU):** Ratio between the intersection and the union of predicted and actual lesion regions.
+- **Jaccard Index:** A similarity metric closely related to IoU for segmentation quality assessment.
+- **Sensitivity:** Measures the proportion of actual lesion pixels correctly identified by the model.
+- **Pixel Accuracy:** The proportion of correctly classified pixels over the total number of pixels.
+
+These metrics provide a comprehensive evaluation of the segmentation model's ability to accurately delineate lesion boundaries before the classification stage.
