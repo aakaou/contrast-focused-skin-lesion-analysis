@@ -198,6 +198,6 @@ Although widely used, accuracy alone may not fully reflect model performance whe
 
 The figure below compares the performance of the four preprocessing pipelines across all classification models using the four evaluation metrics.
 
-![Pipeline Comparison](figures/pipeline_model_comparison.png)
+![Pipeline Comparison](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/01f5f75c7d2feb67b632df6b07cca5e8f8897f4b/comparison_pipelines.png)
 
 The results show that **Pipeline 4 consistently achieves higher precision, recall, F1-score, and accuracy across most models**, with **EfficientNetB7 demonstrating the competitive overall performance**.
