@@ -74,7 +74,7 @@ Lesion segmentation is performed using a **U-Net convolutional neural network**,
 
 The figure below illustrates the segmentation process, including the transformed input image, predicted lesion mask, and the final overlay of the segmented lesion.
 
-![Segmentation Example](figures/segmentation_example.png)
+![Segmentation Example](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/7e46f5ea5e86c54fde2cc0bde2302a90dd286bd1/seg_up_.png)
 
 ### Architecture
 
