@@ -24,7 +24,16 @@ This project proposes a **multi-stage deep learning pipeline** that integrates:
 The goal is to analyze how different preprocessing strategies influence segmentation accuracy and classification performance.
 
 ---
+# Installation
 
+Clone the repository:
+
+```bash
+git clone https://github.com/aakaou/contrast-focused-skin-lesion-analysis.git
+cd contrast-focused-skin-lesion-analysis
+
+
+---
 ## Framework Architecture
 
 The proposed framework follows a structured pipeline:
