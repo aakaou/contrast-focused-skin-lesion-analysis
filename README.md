@@ -144,6 +144,12 @@ Segmentation performance is evaluated using the following metrics:
 
 These metrics provide a comprehensive evaluation of the segmentation model's ability to accurately delineate lesion boundaries before the classification stage.
 
+### Segmentation Performance Analysis
+
+The figure below presents a statistical analysis of the segmentation performance obtained using **Pipeline 4**. It summarizes the distribution of key evaluation metrics across the dataset.
+
+![Segmentation Metrics Distribution](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/main/figures/segmentation_metrics_pipeline4.png)
+
 ## Classification Models
 
 To evaluate the impact of preprocessing strategies on diagnostic performance, the framework tests **25 pretrained deep learning models** across the four preprocessing pipelines. These models include classical convolutional neural networks, lightweight architectures, and modern deep learning architectures.
