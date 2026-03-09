@@ -70,6 +70,12 @@ Pipeline 4 produced the **best overall classification performance**.
 
 Lesion segmentation is performed using a **U-Net convolutional neural network**, a widely adopted architecture in medical image analysis due to its ability to capture contextual information while preserving fine spatial details.
 
+### Segmentation Example
+
+The figure below illustrates the segmentation process, including the transformed input image, predicted lesion mask, and the final overlay of the segmented lesion.
+
+![Segmentation Example](figures/segmentation_example.png)
+
 ### Architecture
 
 The segmentation network follows an **encoder–decoder structure**:
@@ -94,5 +100,6 @@ Segmentation performance is evaluated using the following metrics:
 - **Jaccard Index:** A similarity metric closely related to IoU for segmentation quality assessment.
 - **Sensitivity:** Measures the proportion of actual lesion pixels correctly identified by the model.
 - **Pixel Accuracy:** The proportion of correctly classified pixels over the total number of pixels.
+
 
 These metrics provide a comprehensive evaluation of the segmentation model's ability to accurately delineate lesion boundaries before the classification stage.
