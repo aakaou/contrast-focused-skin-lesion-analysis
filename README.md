@@ -23,6 +23,8 @@ This project proposes a **multi-stage deep learning pipeline** that integrates:
 
 The goal is to analyze how different preprocessing strategies influence segmentation accuracy and classification performance.
 
+---
+---
 ## Installation
 
 Clone the repository:
