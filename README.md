@@ -148,7 +148,7 @@ These metrics provide a comprehensive evaluation of the segmentation model's abi
 
 The figure below presents a statistical analysis of the segmentation performance obtained using **Pipeline 4**. It summarizes the distribution of key evaluation metrics across the dataset.
 
-![Segmentation Metrics Distribution](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/main/figures/segmentation_metrics_pipeline4.png)
+![Segmentation Metrics Distribution](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/25d8efcb39e6aefa0f375b06e441271602e9fda3/graph_metrics_seg_update.png)
 
 ## Classification Models
 
