@@ -28,3 +28,5 @@ The goal is to analyze how different preprocessing strategies influence segmenta
 ## Framework Architecture
 
 The proposed framework follows a structured pipeline:
+
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
