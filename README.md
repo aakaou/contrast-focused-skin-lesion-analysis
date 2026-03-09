@@ -100,7 +100,7 @@ Four preprocessing pipelines are evaluated. The figure below shows the preproces
 ### Pipeline 4 – Optimized Contrast Pipeline
 - DullRazor hair removal
 - Inpainting
-- Resize (256*256)
+- Resize (256x256)
 - CLAHE enhancement
 - Intensity normalization
 
