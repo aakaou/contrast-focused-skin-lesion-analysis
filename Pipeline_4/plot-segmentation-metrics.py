@@ -6,7 +6,7 @@ import numpy as np                   # For numerical operations
 # =========================
 # LOAD DATA
 # =========================
-df = pd.read_csv("/home/aboubakr/Descargas/article4/ham10000/pipeline3/segmentation_metrics_0.csv")
+df = pd.read_csv("/home/aboubakr/Descargas/article4/ham10000/pipeline3/segmentation_metrics.csv")
 # Load segmentation metrics CSV into a DataFrame
 
 # =========================
