@@ -306,7 +306,7 @@ plt.grid()
 
 plt.tight_layout()
 
-plt.savefig("/kaggle/working/resnet101_roc_curve.png",dpi=300)
+#plt.savefig("/kaggle/working/resnet101_roc_curve.png",dpi=300)
 
 plt.show()
 
