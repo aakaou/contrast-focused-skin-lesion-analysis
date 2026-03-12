@@ -20,10 +20,10 @@ from tensorflow.keras.models import Model
 # ==========================================================
 
 # Folder containing segmented images
-PROC_DIR = Path("/kaggle/working/HAM10000_segmented_p1")
+PROC_DIR = Path("/aakaou/HAM10000_segmented_p1")
 
 # CSV file to store predictions
-OUTPUT_CSV = "/kaggle/working/ham10000_resnet101_segmented_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_resnet101_segmented_predictions_p1.csv"
 
 # Image size required by ResNet
 IMG_SIZE = (224, 224)
@@ -193,7 +193,7 @@ pred_df = pd.read_csv(OUTPUT_CSV)
 # 10. LOAD HAM10000 METADATA
 # ==========================================================
 
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 
 # Create filename column
 metadata["filename"] = metadata["image_id"] + ".jpg"
@@ -305,8 +305,6 @@ plt.legend()
 plt.grid()
 
 plt.tight_layout()
-
-#plt.savefig("/kaggle/working/resnet101_roc_curve.png",dpi=300)
 
 plt.show()
 
