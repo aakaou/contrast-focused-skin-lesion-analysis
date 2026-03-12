@@ -21,7 +21,7 @@ import numpy as np
 # -----------------------------
 # 1. Load segmentation metrics CSV
 # -----------------------------
-csv_path = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/segmentation_metrics_all_images.csv"
+csv_path = "/aakaou/ham10000/pipeline2/segmentation_metrics_all_images.csv"
 df = pd.read_csv(csv_path)
 
 # -----------------------------
