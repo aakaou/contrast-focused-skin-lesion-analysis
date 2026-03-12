@@ -24,10 +24,10 @@ from sklearn.preprocessing import LabelBinarizer
 # ==========================================================
 
 # Folder containing preprocessed segmented images
-PROC_DIR = Path("/kaggle/working/HAM10000_segmented_p1")
+PROC_DIR = Path("/aakaou/HAM10000_segmented_p1")
 
 # CSV to save predictions
-OUTPUT_CSV = "/kaggle/working/ham10000_resnet152_segmented_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_resnet152_segmented_predictions_p1.csv"
 
 # Image size for ResNet152V2
 IMG_SIZE = (224, 224)
@@ -133,7 +133,7 @@ print(results_df['pred_confidence'].describe())
 # ==========================================================
 
 # Load HAM10000 metadata
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'] + '.jpg'
 
 # Merge predictions with ground truth
