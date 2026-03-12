@@ -20,9 +20,9 @@ import seaborn as sns                                       # Enhanced plots
 # =========================
 # 2️⃣ Paths & Hyperparameters
 # =========================
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Overlay images
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")         # Metadata CSV
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/mobilenetv2_results.csv")  # CSV output
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Overlay images
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")         # Metadata CSV
+csv_output = Path("/aakaou/ham10000/pipeline4/mobilenetv2_results.csv")  # CSV output
 
 IMG_SIZE = (224, 224)  # MobileNetV2 input size
 BATCH_SIZE = 16        # Samples per batch
