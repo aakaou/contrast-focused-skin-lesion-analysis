@@ -28,7 +28,7 @@ from tensorflow.keras.metrics import MeanIoU  # Metric for segmentation quality
 IMG_SIZE   = 256  # Resize images to 256x256
 BATCH_SIZE = 8    # Number of images processed per batch
 
-BASE_DIR  = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2")  # Base folder
+BASE_DIR  = Path("/aakaou/ham10000/pipeline2")  # Base folder
 PROC_DIR  = BASE_DIR / "HAM10000_processed_images"  # Preprocessed images
 SONAR_DIR = BASE_DIR / "HAM10000_sonar_images"      # Sonar-effect images
 OUT_DIR   = BASE_DIR / "HAM10000_segmented_images"  # Segmentation results
