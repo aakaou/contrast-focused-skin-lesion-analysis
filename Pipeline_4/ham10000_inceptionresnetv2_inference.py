@@ -20,9 +20,9 @@ import seaborn as sns                                           # Enhanced plots
 # =========================
 # 2️⃣ Paths & Parameters
 # =========================
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Overlay folder path
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")         # Metadata CSV path
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/inceptionresnetv2_results.csv")  # Output CSV
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Overlay folder path
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")         # Metadata CSV path
+csv_output = Path("/aakaou/ham10000/pipeline4/inceptionresnetv2_results.csv")  # Output CSV
 
 IMG_SIZE = (299, 299)  # Input size for InceptionResNetV2
 BATCH_SIZE = 16        # Number of samples per batch
