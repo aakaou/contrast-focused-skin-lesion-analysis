@@ -12,10 +12,10 @@ from tensorflow.keras.models import Model   # Keras Model class for building ful
 # Paths
 # =====================================================
 
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # Directory containing the segmented HAM10000 images
 
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_efficientnetb3_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_efficientnetb3_segmented_predictions_p2.csv"
 # Path to save the CSV with predictions
 
 IMG_SIZE = (300, 300)                       # Default input size for EfficientNetB3
