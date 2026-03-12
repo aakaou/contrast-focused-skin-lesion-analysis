@@ -25,9 +25,9 @@ from sklearn.preprocessing import LabelBinarizer
 # ==========================================================
 # 2️⃣ PATHS & PARAMETERS
 # ==========================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")      # Folder with all input images
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1")    # Optional folder for segmented images
-OUTPUT_CSV = "/kaggle/working/ham10000_inceptionresnetv2_7class_predictions_p1.csv"
+PROC_DIR = Path("/aakaou/HAM10000_images_all")      # Folder with all input images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1")    # Optional folder for segmented images
+OUTPUT_CSV = "/aakaou/ham10000_inceptionresnetv2_7class_predictions_p1.csv"
 
 IMG_SIZE = (299, 299)   # InceptionResNetV2 requires 299x299 input size
 BATCH_SIZE = 32         # Batch size for inference
@@ -143,7 +143,7 @@ else:
 # ==========================================================
 # 8️⃣ MERGE PREDICTIONS WITH GROUND TRUTH METADATA
 # ==========================================================
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'].astype(str) + '.jpg'
 
 # Merge predictions with metadata to get true labels
@@ -220,5 +220,3 @@ for cls in sorted(valid_classes, key=lambda x: auc_dict[x], reverse=True):
     print(f"  {cls:>8}: {auc_dict[cls]:.3f}")
 print(f"\n🏆 MACRO-AUC: {macro_auc:.3f}")
 print(f"📈 Best class: {max(valid_classes, key=lambda x: auc_dict[x])}")
-
-
