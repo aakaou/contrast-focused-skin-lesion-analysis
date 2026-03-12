@@ -39,9 +39,9 @@ from sklearn.preprocessing import LabelBinarizer
 # ==========================================================
 # 2️⃣ DEFINE PATHS AND PARAMETERS
 # ==========================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")  # Folder containing input images
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1") # Optional output folder
-OUTPUT_CSV = "/kaggle/working/ham10000_efficientnetb3_7class_predictions_p1.csv"  # Predictions CSV path
+PROC_DIR = Path("/aakaou/HAM10000_images_all")  # Folder containing input images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1") # Optional output folder
+OUTPUT_CSV = "/aakaou/ham10000_efficientnetb3_7class_predictions_p1.csv"  # Predictions CSV path
 
 IMG_SIZE = (300, 300)  # EfficientNetB3 expects 300x300 images
 BATCH_SIZE = 32        # Number of images per batch for prediction
@@ -169,7 +169,7 @@ print("🏆 B3 accuracy rivals heavyweights (300x300 input)!")
 # ==========================================================
 # 8️⃣ MERGE WITH GROUND TRUTH METADATA
 # ==========================================================
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'].astype(str) + '.jpg'
 
 # Merge predictions with true labels
@@ -251,4 +251,3 @@ for cls in sorted(valid_classes, key=lambda x: auc_dict[x], reverse=True):
 
 print(f"\n🏆 MACRO-AUC: {macro_auc:.3f}")
 print(f"📈 Best class: {max(valid_classes, key=lambda x: auc_dict[x])}")
-print(f"✅ ROC plot saved at: /kaggle/working/efficientnetb3_p1_roc_curve.png")
