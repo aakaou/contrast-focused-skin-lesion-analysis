@@ -12,8 +12,8 @@ from tensorflow.keras.models import Model
 # =====================================================
 # Paths
 # =====================================================
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_densenet169_segmented_predictions_p2.csv"
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_densenet169_segmented_predictions_p2.csv"
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
