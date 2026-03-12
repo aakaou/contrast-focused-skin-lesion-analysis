@@ -259,13 +259,13 @@ class KaggleImageProcessor:
 # ==================================================
 if __name__ == "__main__":
     # Input raw images directory
-    data_dir = r"/home/aboubakr/Descargas/article4/ham10000/HAM10000_images_all"
+    data_dir = r"/aakaou/ham10000/HAM10000_images_all"
     # Preprocessed images output directory
-    output_dir = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/processed-images1"
+    output_dir = r"/aakaou/ham10000/pipeline3/processed-images1"
 
     # Segmentation outputs
-    masks_folder = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_masks1"
-    overlays_folder = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_overlays1"
+    masks_folder = r"/aakaou/ham10000/pipeline3/seg_masks1"
+    overlays_folder = r"/aakaou/ham10000/pipeline3/seg_overlays1"
 
     kaggle_json_path = None
     destination_dir = None
