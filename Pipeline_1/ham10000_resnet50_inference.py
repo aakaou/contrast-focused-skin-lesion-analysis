@@ -20,10 +20,10 @@ from tensorflow.keras.models import Model
 # ==========================================================
 
 # Directory containing segmented skin lesion images
-PROC_DIR = Path("/kaggle/working/HAM10000_segmented_p1")
+PROC_DIR = Path("/aakaou/HAM10000_segmented_p1")
 
 # Output CSV file where predictions will be saved
-OUTPUT_CSV = "/kaggle/working/ham10000_resnet50_segmented_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_resnet50_segmented_predictions_p1.csv"
 
 # CNN input image size required by ResNet
 IMG_SIZE = (224, 224)
@@ -235,7 +235,7 @@ import seaborn as sns
 # 10. LOAD PREDICTIONS
 # ==========================================================
 
-csv_path = "/kaggle/working/ham10000_resnet50_segmented_predictions_p1.csv"
+csv_path = "/aakaou/ham10000_resnet50_segmented_predictions_p1.csv"
 
 pred_df = pd.read_csv(csv_path)
 
@@ -246,7 +246,7 @@ print("Predictions loaded:", pred_df.shape)
 # 11. LOAD METADATA (GROUND TRUTH)
 # ==========================================================
 
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 
 # Convert image_id → filename
 metadata['filename'] = metadata['image_id'] + '.jpg'
