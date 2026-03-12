@@ -21,9 +21,9 @@ import seaborn as sns
 # =========================
 # PATHS
 # =========================
-prediction_folder = Path(r"/aakaou/ham10000/pipeline3/seg_masks1")
-ground_truth_folder = Path(r"/aakaou/ham10000/pipeline3/seg_overlays1")
-csv_output = Path(r"/aakaou/ham10000/pipeline3/segmentation_metrics.csv")
+prediction_folder = Path(r"/aakaou/ham10000/pipeline4/seg_masks1")
+ground_truth_folder = Path(r"/aakaou/ham10000/pipeline4/seg_overlays1")
+csv_output = Path(r"/aakaou/ham10000/pipeline4/segmentation_metrics_resnet50.csv")
 
 metadata_file = Path(r"/aakaou/ham10000/HAM10000_metadata.csv")
 original_images_folder = Path(r"/aakaou/ham10000/HAM10000_images_all")
