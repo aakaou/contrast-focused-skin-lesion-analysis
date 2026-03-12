@@ -12,10 +12,10 @@ from tensorflow.keras.models import Model   # Model class used to construct the 
 # Paths
 # =====================================================
 
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # Directory containing segmented HAM10000 skin lesion images
 
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_mobilenetv3_large_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_mobilenetv3_large_segmented_predictions_p2.csv"
 # Path where the prediction results will be saved
 
 IMG_SIZE = (224, 224)                       # Input image size required by MobileNetV3-Large
