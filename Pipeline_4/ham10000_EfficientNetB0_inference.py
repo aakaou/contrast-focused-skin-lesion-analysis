@@ -28,9 +28,9 @@ import seaborn as sns
 # =========================
 # 2️⃣ Paths & hyperparameters
 # =========================
-overlay_dir = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Overlay images folder
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")  # Metadata CSV
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/efficientnetb0_results.csv")  # Output CSV
+overlay_dir = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Overlay images folder
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")  # Metadata CSV
+csv_output = Path("/aakaou/ham10000/pipeline4/efficientnetb0_results.csv")  # Output CSV
 
 IMG_SIZE = (224, 224)  # Input image size for EfficientNetB0
 BATCH_SIZE = 16        # Batch size
