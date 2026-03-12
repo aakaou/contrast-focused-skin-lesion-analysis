@@ -17,11 +17,11 @@ import matplotlib.pyplot as plt
 # =========================
 # PATHS
 # =========================
-prediction_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_masks1")
-ground_truth_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_overlays1")
-csv_output = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/segmentation_metrics.csv")
-metadata_file = Path(r"/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")
-original_images_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/HAM10000_images_all")
+prediction_folder = Path(r"/aakaou/ham10000/pipeline3/seg_masks1")
+ground_truth_folder = Path(r"/aakaou/ham10000/pipeline3/seg_overlays1")
+csv_output = Path(r"/aakaou/ham10000/pipeline3/segmentation_metrics.csv")
+metadata_file = Path(r"/aakaou/ham10000/HAM10000_metadata.csv")
+original_images_folder = Path(r"/aakaou/ham10000/HAM10000_images_all")
 
 IMG_SIZE = (224, 224)  # Resize all images to 224x224
 BATCH_SIZE = 16         # Batch size for training
