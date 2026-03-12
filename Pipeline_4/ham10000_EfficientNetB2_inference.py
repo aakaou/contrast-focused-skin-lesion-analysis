@@ -17,9 +17,9 @@ import seaborn as sns
 # =========================
 # PATHS
 # =========================
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/efficientnetb2_results.csv")
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")
+csv_output = Path("/aakaou/ham10000/pipeline4/efficientnetb2_results.csv")
 
 IMG_SIZE = (260, 260)   # EfficientNetB2 input
 BATCH_SIZE = 16
