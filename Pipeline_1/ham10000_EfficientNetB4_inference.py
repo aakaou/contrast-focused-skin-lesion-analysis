@@ -18,9 +18,9 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D  # Layers for 
 # ============================================================
 # 1️⃣ Define paths and constants
 # ============================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")   # Folder containing input images
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1") # Folder for output (optional)
-OUTPUT_CSV = "/kaggle/working/ham10000_efficientnetb4_7class_predictions_p1.csv"  # CSV output
+PROC_DIR = Path("/aakaou/HAM10000_images_all")   # Folder containing input images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1") # Folder for output (optional)
+OUTPUT_CSV = "/aakaou/ham10000_efficientnetb4_7class_predictions_p1.csv"  # CSV output
 IMG_SIZE = (380, 380)        # EfficientNetB4 recommended input size
 BATCH_SIZE = 32              # Batch size for predictions
 
