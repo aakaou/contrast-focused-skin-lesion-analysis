@@ -28,9 +28,9 @@ import seaborn as sns
 # =========================
 # 2️⃣ Paths & Hyperparameters
 # =========================
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Overlay images folder
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")         # CSV with metadata
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/mobilenetv3large_results.csv")  # Output CSV
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Overlay images folder
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")         # CSV with metadata
+csv_output = Path("/aakaou/ham10000/pipeline4/mobilenetv3large_results.csv")  # Output CSV
 
 IMG_SIZE = (224, 224)  # Input size required for MobileNetV3
 BATCH_SIZE = 16        # Number of images per batch
