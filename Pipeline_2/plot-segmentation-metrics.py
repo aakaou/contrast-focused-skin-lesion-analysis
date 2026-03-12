@@ -10,7 +10,7 @@ Jaccard, and Sensitivity scores for all processed images, and produces:
 4. Box plots for comparison
 5. Top vs Worst performers
 6. Accuracy vs Sensitivity scatter (colored by IoU)
-The final dashboard is saved as a high-resolution PNG and displayed interactively.
+The final dashboard is saved as a high-resolution PNG and displayed interactively. 
 """
 
 import pandas as pd
