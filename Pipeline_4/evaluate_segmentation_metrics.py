@@ -94,11 +94,11 @@ def evaluate_segmentation(pred_folder, gt_folder, csv_path):
 
 if __name__ == "__main__":
     # Folders containing predicted masks and ground truth masks
-    prediction_folder = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_masks1"
-    ground_truth_folder = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_overlays1"
+    prediction_folder = r"/aakaou/ham10000/pipeline3/seg_masks1"
+    ground_truth_folder = r"/aakaou/ham10000/pipeline3/seg_overlays1"
 
     # Output CSV file path
-    csv_output = r"/home/aboubakr/Descargas/article4/ham10000/pipeline3/segmentation_metrics.csv"
+    csv_output = r"/aakaou/ham10000/pipeline3/segmentation_metrics.csv"
 
     # Run evaluation
     evaluate_segmentation(prediction_folder, ground_truth_folder, csv_output)
