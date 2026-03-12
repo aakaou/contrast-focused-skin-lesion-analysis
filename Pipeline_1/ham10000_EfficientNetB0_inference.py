@@ -36,9 +36,9 @@ from sklearn.preprocessing import LabelBinarizer
 # ==========================================================
 # 2️⃣ PATHS AND PARAMETERS
 # ==========================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")   # Input images folder
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1") # Optional output folder
-OUTPUT_CSV = "/kaggle/working/ham10000_efficientnetb0_7class_predictions_p1.csv"
+PROC_DIR = Path("/aakaou/HAM10000_images_all")   # Input images folder
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1") # Optional output folder
+OUTPUT_CSV = "/aakaou/ham10000_efficientnetb0_7class_predictions_p1.csv"
 
 IMG_SIZE = (224, 224)  # EfficientNetB0 input size
 BATCH_SIZE = 32        # Batch size for prediction
@@ -129,7 +129,7 @@ else:
 # ==========================================================
 # 8️⃣ MERGE WITH GROUND TRUTH METADATA
 # ==========================================================
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'].astype(str) + '.jpg'
 df = results_df.merge(metadata[['filename', 'dx']], on='filename', how='inner')
 print(f"✅ Merged dataset: {df.shape[0]} images")
