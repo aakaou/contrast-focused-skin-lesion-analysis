@@ -23,9 +23,9 @@ from sklearn.preprocessing import LabelBinarizer
 # ==========================================================
 # 2️⃣ PATHS & PARAMETERS
 # ==========================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")      # Folder with original images
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1")    # Optional: segmented images folder
-OUTPUT_CSV = "/kaggle/working/ham10000_inceptionv3_7class_predictions_p1.csv"
+PROC_DIR = Path("/aakaou/HAM10000_images_all")      # Folder with original images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1")    # Optional: segmented images folder
+OUTPUT_CSV = "/aakaou/ham10000_inceptionv3_7class_predictions_p1.csv"
 
 IMG_SIZE = (299, 299)   # InceptionV3 requires 299x299 input
 BATCH_SIZE = 32         # Batch size for prediction
@@ -142,7 +142,7 @@ else:
 # ==========================================================
 # 8️⃣ MERGE PREDICTIONS WITH GROUND TRUTH METADATA
 # ==========================================================
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'].astype(str) + '.jpg'
 
 # Merge predictions with metadata to get true labels
