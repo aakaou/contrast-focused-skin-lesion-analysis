@@ -55,7 +55,7 @@ base_model = MobileNetV3Small(
     input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3)
 )
 
-# Add a global average pooling layer
+# Add a global average pooling layer 
 x = GlobalAveragePooling2D()(base_model.output)
 
 # Fully connected layers
