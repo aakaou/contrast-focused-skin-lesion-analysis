@@ -20,11 +20,11 @@ import cv2                       # Image loading & resizing
 # =========================
 # PATHS
 # =========================
-original_images_folder = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_images_all")  # RGB images
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Overlay images
-prediction_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_masks1")       # Predicted masks
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")         # CSV metadata
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/densenet201_results.csv")  # Save predictions
+original_images_folder = Path("/aakaou/ham10000/HAM10000_images_all")  # RGB images
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Overlay images
+prediction_folder = Path("/aakaou/ham10000/pipeline4/seg_masks1")       # Predicted masks
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")         # CSV metadata
+csv_output = Path("/aakaou/ham10000/pipeline4/densenet201_results.csv")  # Save predictions
 
 # =========================
 # CONSTANTS
