@@ -12,10 +12,10 @@ from tensorflow.keras.models import Model   # Keras model class for building cus
 # Paths
 # =====================================================
 
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # Directory containing segmented skin lesion images from HAM10000 dataset
 
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_mobilenetv3_small_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_mobilenetv3_small_segmented_predictions_p2.csv"
 # Output CSV file where prediction results will be saved
 
 IMG_SIZE = (224, 224)                       # Image size expected by MobileNetV3
