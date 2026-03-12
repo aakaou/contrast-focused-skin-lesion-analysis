@@ -12,10 +12,10 @@ from tensorflow.keras.models import Model   # Model class used to build neural n
 # Paths
 # =====================================================
 
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # Directory containing segmented HAM10000 lesion images
 
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_efficientnetb1_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_efficientnetb1_segmented_predictions_p2.csv"
 # File where prediction results will be saved
 
 IMG_SIZE = (240, 240)                       # Input image size required by EfficientNetB1
