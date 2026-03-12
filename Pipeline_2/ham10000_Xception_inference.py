@@ -14,10 +14,10 @@ from tensorflow.keras.models import Model            # Keras functional model cl
 # =====================================================
 
 # Directory containing segmented HAM10000 images
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 
 # Path where prediction results will be saved as CSV
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_xception_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_xception_segmented_predictions_p2.csv"
 
 # Image size used as input for the CNN model
 # Xception default is 299x299 but 224x224 reduces memory usage and computation
