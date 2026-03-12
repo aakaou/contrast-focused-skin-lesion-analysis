@@ -14,10 +14,10 @@ from tensorflow.keras.models import Model                      # Keras model con
 # =====================================================
 
 # Directory containing segmented HAM10000 images
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 
 # CSV file where prediction results will be stored
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_inceptionresnetv2_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_inceptionresnetv2_segmented_predictions_p2.csv"
 
 # Input image size for the CNN
 # 224x224 reduces memory usage compared to the original 299x299
