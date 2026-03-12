@@ -43,16 +43,16 @@ import seaborn as sns                   # Visualization
 # ================================
 
 # Directory containing processed HAM10000 images
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")
+PROC_DIR = Path("/aakaou/HAM10000_images_all")
 
 # Output directory
-OUT_DIR = Path("/kaggle/working/")
+OUT_DIR = Path("/aakaou/")
 
 # CSV file to store predictions
-OUTPUT_CSV = "/kaggle/working/ham10000_vgg16_7class_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_vgg16_7class_predictions_p1.csv"
 
 # Metadata file containing ground truth labels
-METADATA_PATH = "/kaggle/input/ham10000-dataset/HAM10000_metadata.csv"
+METADATA_PATH = "/aakaou/ham10000-dataset/HAM10000_metadata.csv"
 
 # Model input image size
 IMG_SIZE = (224, 224)
@@ -271,8 +271,6 @@ plt.legend()
 plt.grid(True)
 
 plt.tight_layout()
-
-plt.savefig("/kaggle/working/vgg16_roc_curve.png", dpi=300)
 
 plt.show()
 
