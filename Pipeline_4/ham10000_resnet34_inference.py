@@ -25,7 +25,7 @@ import seaborn as sns              # Advanced plotting (confusion matrix & heatm
 # =========================
 prediction_folder = Path("/aakaou/ham10000/pipeline4/seg_masks1")
 ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")
-csv_output = Path("/aakaou/ham10000/pipeline4/segmentation_metrics.csv")
+csv_output = Path("/aakaou/ham10000/pipeline4/segmentation_metrics_resnet34.csv")
 
 metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")
 original_images_folder = Path("/aakaou/ham10000/HAM10000_images_all")
