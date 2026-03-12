@@ -145,7 +145,7 @@ print("⚡ V3-Small → V3-Large: lightweight accuracy KING!")
 # 8️⃣ Load predictions + metadata for evaluation
 # ============================================================
 pred_df = pd.read_csv(OUTPUT_CSV)
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'] + '.jpg'
 
 # Merge predictions with ground truth
