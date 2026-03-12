@@ -18,6 +18,19 @@ from tensorflow.keras.models import Model
 
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.preprocessing import LabelBinarizer
+
+# ==========================================================
+# 2️⃣ PATHS & PARAMETERS
+# ==========================================================
+PROC_DIR = Path("/aakaou/HAM10000_images_all")      # Folder with original images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1")    # Optional: segmented images folder
+OUTPUT_CSV = "/aakaou/ham10000_densenet201_7class_predictions_p1.csv"
+
+IMG_SIZE = (224, 224)   # DenseNet input size
+BATCH_SIZE = 32         # Batch size for prediction
+
+# HAM10000 7 skin lesion classes
+class_names = ['nv', 'mel', 'bkl', 'bcc', 'akiec', 'vasc', 'df']
 # ==========================================================
 # 3️⃣ DEFINE HELPER FUNCTION TO SORT IMAGE FILES
 # ==========================================================
@@ -114,7 +127,7 @@ print(results_df['pred_confidence'].describe())
 # ==========================================================
 # 7️⃣ MERGE PREDICTIONS WITH METADATA
 # ==========================================================
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'].astype(str) + '.jpg'
 
 # Merge predictions with ground truth
