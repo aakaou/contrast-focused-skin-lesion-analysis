@@ -29,13 +29,13 @@ import seaborn as sns
 # ==========================================================
 
 # Directory containing segmented lesion images
-PROC_DIR = Path("/kaggle/working/HAM10000_segmented_p1")
+PROC_DIR = Path("/aakaou/HAM10000_segmented_p1")
 
 # Output CSV file with predictions
-OUTPUT_CSV = "/kaggle/working/ham10000_resnet34_segmented_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_resnet34_segmented_predictions_p1.csv"
 
 # Metadata file (ground truth labels)
-META_PATH = "/kaggle/input/ham10000-dataset/HAM10000_metadata.csv"
+META_PATH = "/aakaou/ham10000-dataset/HAM10000_metadata.csv"
 
 # CNN input size
 IMG_SIZE = (224, 224)
