@@ -20,9 +20,9 @@ import seaborn as sns                                       # Enhanced plotting
 # =========================
 # 2️⃣ Paths & Hyperparameters
 # =========================
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")  # Folder with overlay images
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")         # CSV file with labels
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline4/xception_results.csv")  # CSV for predictions
+ground_truth_folder = Path("/aakaou/ham10000/pipeline4/seg_overlays1")  # Folder with overlay images
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")         # CSV file with labels
+csv_output = Path("/aakaou/ham10000/pipeline4/xception_results.csv")  # CSV for predictions
 
 IMG_SIZE = (299, 299)  # Xception input size
 BATCH_SIZE = 16        # Number of samples per batch
