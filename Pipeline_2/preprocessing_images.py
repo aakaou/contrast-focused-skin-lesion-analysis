@@ -23,16 +23,16 @@ from concurrent.futures import ThreadPoolExecutor  # Parallel processing
 # ============================
 # PATHS
 # ============================
-ROOT_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/")  # Root dataset directory
+ROOT_DIR = Path("/aakaou/ham10000/")  # Root dataset directory
 
 # Raw image folders (part 1 and part 2)
 PART1_DIR = ROOT_DIR / "HAM10000_images_part_1"
 PART2_DIR = ROOT_DIR / "HAM10000_images_part_2"
 
 # Output directories
-ALL_IMAGES_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_images_all")
-PROCESSED_DIR  = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_processed_images")
-SONAR_DIR      = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_sonar_images")
+ALL_IMAGES_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_images_all")
+PROCESSED_DIR  = Path("/aakaou/ham10000/pipeline2/HAM10000_processed_images")
+SONAR_DIR      = Path("/aakaou/ham10000/pipeline2/HAM10000_sonar_images")
 
 # Metadata CSV file
 META_PATH = ROOT_DIR / "HAM10000_metadata.csv"
