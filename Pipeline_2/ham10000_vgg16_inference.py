@@ -22,9 +22,9 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 # ================================
 # PATHS & SETTINGS
 # ================================
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_images_all")  # Folder of processed images
-OUT_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_vgg16_7class_predictions_p2.csv"
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_images_all")  # Folder of processed images
+OUT_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_vgg16_7class_predictions_p2.csv"
 
 IMG_SIZE = (224, 224)  # VGG16 input size
 BATCH_SIZE = 32        # Adjust based on GPU memory
