@@ -13,9 +13,9 @@ from tensorflow.keras.models import Model
 # Paths
 # =====================================================
 # Directory containing segmented images
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # CSV file where predictions will be saved
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_densenet201_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_densenet201_segmented_predictions_p2.csv"
 
 # Image input size for the model
 IMG_SIZE = (224, 224)
