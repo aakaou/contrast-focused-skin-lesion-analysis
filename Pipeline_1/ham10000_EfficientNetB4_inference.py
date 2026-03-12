@@ -150,7 +150,7 @@ csv_path = OUTPUT_CSV
 pred_df = pd.read_csv(csv_path)  # Predicted results
 
 # Load metadata (ground truth labels)
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'] + '.jpg'
 
 # Merge predictions with ground truth
@@ -271,4 +271,3 @@ for cls in sorted(valid_classes, key=lambda x: auc_dict[x], reverse=True):
 
 macro_auc = np.mean([auc_dict[cls] for cls in valid_classes])
 print(f"\n🏆 MACRO-AUC: {macro_auc:.3f}")
-print(f"📈 Best class: {max(valid_classes, key=lambda x: auc_dict[x])}")
