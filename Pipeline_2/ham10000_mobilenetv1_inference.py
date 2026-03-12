@@ -14,10 +14,10 @@ from tensorflow.keras.models import Model              # Keras model constructor
 # =====================================================
 
 # Directory containing segmented HAM10000 images
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 
 # Path where the prediction results will be saved
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_mobilenetv1_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_mobilenetv1_segmented_predictions_p2.csv"
 
 # Input image size required by MobileNet
 IMG_SIZE = (224, 224)
