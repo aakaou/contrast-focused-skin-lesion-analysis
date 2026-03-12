@@ -21,10 +21,10 @@ from tensorflow.keras.models import Model  # Keras model class
 # PATHS AND PARAMETERS
 # ============================================================
 
-PROC_DIR = Path("/kaggle/working/HAM10000_segmented_p1")
+PROC_DIR = Path("/aakaou/HAM10000_segmented_p1")
 # Folder containing segmented skin lesion images
 
-OUTPUT_CSV = "/kaggle/working/ham10000_resnet18_segmented_predictions_p1.csv"
+OUTPUT_CSV = "/aakaou/ham10000_resnet18_segmented_predictions_p1.csv"
 # CSV file where predictions will be stored
 
 IMG_SIZE = (224, 224)              # Image size expected by CNN models
@@ -363,8 +363,6 @@ plt.legend(loc="lower right")
 plt.grid(True)
 
 plt.tight_layout()
-
-#plt.savefig('/kaggle/working/resnet18_p1_roc_curve.png', dpi=300)
 
 plt.show()
 
