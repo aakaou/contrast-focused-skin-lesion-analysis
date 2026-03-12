@@ -11,10 +11,10 @@ from tensorflow.keras.models import Model  # Model class to create the final net
 # =====================================================
 # Paths and configuration
 # =====================================================
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
 # Directory containing segmented images
 
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_efficientnetb7_segmented_predictions_p2.csv"
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_efficientnetb7_segmented_predictions_p2.csv"
 # Path to save prediction results as CSV
 
 IMG_SIZE = (600, 600)  # EfficientNetB7 default input size (height, width)
