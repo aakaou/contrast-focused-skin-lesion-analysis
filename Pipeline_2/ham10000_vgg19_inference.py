@@ -23,9 +23,9 @@ def extract_number(filename):
     return int(m.group(1)) if m else float('inf')
 
 # === Paths and settings ===
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_images_all")
-OUT_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_vgg19_7class_predictions_p2.csv"
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_images_all")
+OUT_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_vgg19_7class_predictions_p2.csv"
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
 
