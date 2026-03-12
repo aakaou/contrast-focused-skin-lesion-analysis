@@ -22,9 +22,9 @@ import seaborn as sns
 # ============================================================
 # 2️⃣ Paths and constants
 # ============================================================
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all")   # Folder containing images
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1") # Optional folder for segmented outputs
-OUTPUT_CSV = "/kaggle/working/ham10000_mobilenetv3large_7class_predictions_p1.csv"  # Output CSV
+PROC_DIR = Path("/aakaou/HAM10000_images_all")   # Folder containing images
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1") # Optional folder for segmented outputs
+OUTPUT_CSV = "/aakaou/ham10000_mobilenetv3large_7class_predictions_p1.csv"  # Output CSV
 IMG_SIZE = (224, 224)        # MobileNetV3-Large input size
 BATCH_SIZE = 32              # Larger batch for smaller 224x224 images
 
@@ -253,7 +253,6 @@ plt.show()
 # ============================================================
 # 13️⃣ ROC-AUC results summary
 # ============================================================
-print(f"\n✅ ROC Plot saved: mobilenetv3large_p1_roc_curve.png")
 print(f"📊 Valid classes plotted: {len(valid_classes)}/7")
 print("\n🎯 AUC Scores:")
 for cls in sorted(valid_classes, key=lambda x: auc_dict[x], reverse=True):
