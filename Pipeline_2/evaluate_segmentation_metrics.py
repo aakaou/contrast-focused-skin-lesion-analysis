@@ -122,9 +122,9 @@ def evaluate_segmentation_metrics(processed_folder, seg_folder, output_csv):
 # -----------------------------
 # RUN SCRIPT
 # -----------------------------
-processed_folder = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_processed_images"
-seg_folder = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images"
-output_csv = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/segmentation_metrics_all_images.csv"
+processed_folder = "/aakaou/ham10000/pipeline2/HAM10000_processed_images"
+seg_folder = "/aakaou/ham10000/pipeline2/HAM10000_segmented_images"
+output_csv = "/aakaou/ham10000/pipeline2/segmentation_metrics_all_images.csv"
 
 evaluate_segmentation_metrics(processed_folder, seg_folder, output_csv)
 
