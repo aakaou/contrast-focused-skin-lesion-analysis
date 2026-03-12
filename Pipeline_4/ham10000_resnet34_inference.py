@@ -23,12 +23,12 @@ import seaborn as sns              # Advanced plotting (confusion matrix & heatm
 # =========================
 # PATHS
 # =========================
-prediction_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_masks1")
-ground_truth_folder = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline3/seg_overlays1")
-csv_output = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline3/segmentation_metrics.csv")
+prediction_folder = Path("/aakaou/ham10000/pipeline3/seg_masks1")
+ground_truth_folder = Path("/aakaou/ham10000/pipeline3/seg_overlays1")
+csv_output = Path("/aakaou/ham10000/pipeline3/segmentation_metrics.csv")
 
-metadata_file = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")
-original_images_folder = Path("/home/aboubakr/Descargas/article4/ham10000/HAM10000_images_all")
+metadata_file = Path("/aakaou/ham10000/HAM10000_metadata.csv")
+original_images_folder = Path("/aakaou/ham10000/HAM10000_images_all")
 
 # =========================
 # CONSTANTS
