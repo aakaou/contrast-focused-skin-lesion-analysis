@@ -23,13 +23,13 @@ import tensorflow as tf                # Deep learning framework
 # DEFINE DATASET PATHS
 # ===============================
 
-PROC_DIR = Path("/kaggle/working/HAM10000_images_all") 
+PROC_DIR = Path("/aakaou/HAM10000_images_all") 
 # Folder containing processed HAM10000 images
 
-OUT_DIR = Path("/kaggle/working/HAM10000_segmented_p1") 
+OUT_DIR = Path("/aakaou/HAM10000_segmented_p1") 
 # Directory where segmentation outputs or processed files are stored
 
-OUTPUT_CSV = "/kaggle/working/ham10000_vgg19_7class_predictions_p1.csv" 
+OUTPUT_CSV = "/aakaou/ham10000_vgg19_7class_predictions_p1.csv" 
 # CSV file where model predictions will be saved
 
 IMG_SIZE = (224, 224)                  
@@ -219,7 +219,7 @@ from sklearn.metrics import roc_curve, auc
 pred_df = pd.read_csv(OUTPUT_CSV)
 
 # Load HAM10000 metadata containing ground truth labels
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 
 # Create filename column to match prediction CSV
 metadata['filename'] = metadata['image_id'] + '.jpg'
@@ -320,8 +320,6 @@ plt.legend(loc="lower right")
 plt.grid(True)
 
 plt.tight_layout()
-
-#plt.savefig('/kaggle/working/vgg19_p1_roc_curve.png', dpi=300)
 
 plt.show()
 
