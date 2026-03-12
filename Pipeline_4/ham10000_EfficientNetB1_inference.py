@@ -17,11 +17,11 @@ import seaborn as sns
 # =========================
 # PATHS
 # =========================
-prediction_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_masks1")
-ground_truth_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline4/seg_overlays1")
-original_images_folder = Path(r"/home/aboubakr/Descargas/article4/ham10000/HAM10000_images_all")
-csv_output = Path(r"/home/aboubakr/Descargas/article4/ham10000/pipeline4/efficientnetb1_results.csv")
-metadata_file = Path(r"/home/aboubakr/Descargas/article4/ham10000/HAM10000_metadata.csv")
+prediction_folder = Path(r"/aakaou/ham10000/pipeline4/seg_masks1")
+ground_truth_folder = Path(r"/aakaou/ham10000/pipeline4/seg_overlays1")
+original_images_folder = Path(r"/aakaou/ham10000/HAM10000_images_all")
+csv_output = Path(r"/aakaou/ham10000/pipeline4/efficientnetb1_results.csv")
+metadata_file = Path(r"/aakaou/ham10000/HAM10000_metadata.csv")
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
