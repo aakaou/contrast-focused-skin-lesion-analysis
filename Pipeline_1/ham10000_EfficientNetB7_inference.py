@@ -154,7 +154,7 @@ print("👑 ULTIMATE SOTA: 600x600 + 66M params = ROC CHAMPION!")
 # ============================================================
 pred_df = pd.read_csv(OUTPUT_CSV)
 
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 metadata['filename'] = metadata['image_id'] + '.jpg'
 
 # Merge predictions with true labels
@@ -259,7 +259,6 @@ plt.show()
 # ============================================================
 # 13️⃣ ROC-AUC results summary
 # ============================================================
-print(f"\n✅ ROC Plot saved: efficientnetb7_p1_roc_curve.png")
 print(f"📊 Valid classes plotted: {len(valid_classes)}/7")
 print("\n🎯 AUC Scores:")
 for cls in sorted(valid_classes, key=lambda x: auc_dict[x], reverse=True):
