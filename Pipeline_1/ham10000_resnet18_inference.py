@@ -268,7 +268,7 @@ import seaborn as sns
 pred_df = pd.read_csv(OUTPUT_CSV)
 
 # Load HAM10000 metadata
-metadata = pd.read_csv("/kaggle/input/ham10000-dataset/HAM10000_metadata.csv")
+metadata = pd.read_csv("/aakaou/ham10000-dataset/HAM10000_metadata.csv")
 
 # Create filename column
 metadata['filename'] = metadata['image_id'] + '.jpg'
