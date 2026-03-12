@@ -15,8 +15,8 @@ def extract_number(filename):
     return int(m.group(1)) if m else float('inf')  # Return large number if no match
 
 # === Paths - Segmented Images ===
-PROC_DIR = Path("/home/aboubakr/Descargas/article4/ham10000/pipeline2/HAM10000_segmented_images")  # Folder with segmented images
-OUTPUT_CSV = "/home/aboubakr/Descargas/article4/ham10000/pipeline2/ham10000_resnet34_segmented_predictions_p2.csv"  # Output CSV path
+PROC_DIR = Path("/aakaou/ham10000/pipeline2/HAM10000_segmented_images")  # Folder with segmented images
+OUTPUT_CSV = "/aakaou/ham10000/pipeline2/ham10000_resnet34_segmented_predictions_p2.csv"  # Output CSV path
 IMG_SIZE = (224, 224)  # Resize images to 224x224 for ResNet34
 BATCH_SIZE = 32        # Number of images per batch
 
