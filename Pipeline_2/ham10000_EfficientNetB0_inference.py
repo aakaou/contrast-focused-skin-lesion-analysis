@@ -144,7 +144,7 @@ for i in tqdm(range(0, len(seg_files), BATCH_SIZE), desc="EfficientNetB0"):
             "prob_akiec": float(prob[4]),            # Probability of class AKIEC
             "prob_vasc": float(prob[5]),             # Probability of class VASC
             "prob_df": float(prob[6]),               # Probability of class DF
-        })
+        }) 
 
 # =====================================================
 # Save results
