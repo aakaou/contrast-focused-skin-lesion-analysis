@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 HAM10000 InceptionV3 7-Class Segmented Images Classification Pipeline
 - Predicts 7-class skin lesion probabilities
