@@ -179,7 +179,6 @@ def plot_roc_curves(df):
     plt.legend(loc='lower right', fontsize=11)
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig('/kaggle/working/vgg16_p3_roc_curve.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     if auc_dict:
