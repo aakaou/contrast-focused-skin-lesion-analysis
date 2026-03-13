@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 HAM10000 VGG16 7-class Classification Pipeline
