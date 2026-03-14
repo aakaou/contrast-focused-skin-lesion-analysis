@@ -70,9 +70,9 @@ def preprocess_single_image(image_path, output_dir):
 
 
 # -------------------------------------------------
-# Pipeline 3 preprocessing
+# Pipeline 4 preprocessing
 # -------------------------------------------------
-def preprocess_pipeline3(images_path, output_dir="/aakaou/pipeline4_processed_images"):
+def preprocess_pipeline4(images_path, output_dir="/aakaou/pipeline4_processed_images"):
     """
     Preprocess all images from images_path (Path or string) and save to output_dir.
     Connects to load_dataset.py output.
@@ -102,5 +102,5 @@ if __name__ == "__main__":
     images_path, metadata = load_dataset()
 
     # Run pipeline 4 preprocessing
-    processed_dir = preprocess_pipeline34images_path)
+    processed_dir = preprocess_pipeline4(images_path)
     print("Processed images located at:", processed_dir)
