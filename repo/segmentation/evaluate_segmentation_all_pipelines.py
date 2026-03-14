@@ -96,17 +96,17 @@ if __name__ == "__main__":
     pipelines_info = [
         {
             "pred_masks": r"/aakaou/pipeline1_seg_masks",
-            "gt_masks": r"/aakaou/pipeline1_ground_truth_masks",
+            "gt_masks": r"/aakaou/pipeline1_seg_overlays",
             "csv": r"/aakaou/pipeline1_seg_metrics.csv"
         },
         {
             "pred_masks": r"/aakaou/pipeline2_seg_masks",
-            "gt_masks": r"/aakaou/pipeline2_ground_truth_masks",
+            "gt_masks": r"/aakaou/pipeline2_seg_overlays",
             "csv": r"/aakaou/pipeline2_seg_metrics.csv"
         },
         {
             "pred_masks": r"/aakaou/pipeline3_seg_masks",
-            "gt_masks": r"/aakaou/pipeline3_ground_truth_masks",
+            "gt_masks": r"/aakaou/pipeline3_seg_overlays",
             "csv": r"/aakaou/pipeline3_seg_metrics.csv"
         },
         {
