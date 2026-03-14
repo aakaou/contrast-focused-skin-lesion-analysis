@@ -5,6 +5,19 @@ import cv2
 import numpy as np
 import os
 
+"""
+from datasets.load_dataset import load_dataset
+from preprocessing.preprocess_pipeline4 import preprocess_pipeline4
+
+# Step 1: Load dataset
+images_path, metadata = load_dataset()
+
+# Step 2: Apply pipeline 4
+processed_path = preprocess_pipeline4(images_path)
+
+print("Pipeline 4 processed images:", processed_path)
+"""
+
 # -------------------------------------------------
 # Logging setup
 # -------------------------------------------------
