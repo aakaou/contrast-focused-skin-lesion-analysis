@@ -42,7 +42,7 @@ def preprocess_images(images_path, img_size=256):
     images_path = Path(images_path)
 
     # Output directory
-    processed_path = Path("/kaggle/working/HAM10000_processed")
+    processed_path = Path("/aakaou/pipeline1/HAM10000_processed")
     processed_path.mkdir(parents=True, exist_ok=True)
 
     print("📂 Input images folder:", images_path)
