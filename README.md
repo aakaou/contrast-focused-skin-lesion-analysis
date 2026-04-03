@@ -17,7 +17,7 @@ Skin cancer is one of the most common cancers worldwide. Early and accurate dete
 This project proposes a **multi-stage deep learning pipeline** that integrates:
 
 1. Image preprocessing  
-2. Lesion segmentation  
+2. Lesion segmentation   
 3. Post-processing refinement  
 4. Multi-model classification  
 
