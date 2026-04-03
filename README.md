@@ -46,7 +46,7 @@ pip install -r requirements.txt
 ```
 ## Dataset
 
-This project uses the **HAM10000 dataset**, a widely used dermoscopic image dataset for skin lesion analysis.
+This project uses the **HAM10000 dataset**, a widely used dermoscopic image dataset for skin lesion analysis. 
 
 Dataset source:
 
