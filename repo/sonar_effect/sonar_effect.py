@@ -1,141 +1,382 @@
-# sonar_effect_all_pipelines.py
-# ===============================================================
-# Apply sonar effect + fusion for multiple preprocessing pipelines
-# ===============================================================
+"""
+Sonar Effect Pipeline for:
+- HAM10000
+- ISIC 2024
 
-import os
+Applies sonar transformation on outputs of:
+- pipeline1
+- pipeline2
+- pipeline3
+- pipeline4
+
+Features:
+✔ Lesion = strong sonar
+✔ Background = soft sonar
+✔ Better visual separation
+✔ Improved pseudo-mask
+✔ Supports single folder / multiple folders / multiple pipelines
+"""
+
+import argparse
+import logging
 from pathlib import Path
 import cv2
 import numpy as np
-from concurrent.futures import ThreadPoolExecutor
-import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
 
 
-# --------------------------------------------------
-# SONAR + FUSION FUNCTIONS
-# --------------------------------------------------
+# =========================================================
+# SONAR TRANSFORMATION
+# =========================================================
 def apply_sonar(image):
-    """Convert RGB image to sonar-style colormap."""
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
     norm = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
-    return cv2.applyColorMap(norm.astype(np.uint8), cv2.COLORMAP_JET)
+    sonar = cv2.applyColorMap(norm.astype(np.uint8), cv2.COLORMAP_JET)
+    return sonar
 
 
+# =========================================================
+# IMPROVED PSEUDO MASK
+# =========================================================
+def generate_mask(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Otsu threshold
+    _, mask = cv2.threshold(
+        gray,
+        0,
+        255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    # Morphological cleanup
+    kernel = np.ones((5, 5), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+
+    # Slight dilation
+    mask = cv2.dilate(mask, kernel, iterations=1)
+
+    return mask
+
+
+# =========================================================
+# NEW FUSION
+# =========================================================
 def fuse_lesion_background(original, sonar, mask):
-    """Fuse lesion (mask=1) from original image onto sonar background."""
-    fused = sonar.copy()
-    mask_bin = (mask > 0).astype(np.uint8)
-    if len(mask_bin.shape) == 2:
-        mask_bin = np.stack([mask_bin]*3, axis=-1)
-    fused = np.where(mask_bin == 1, original, fused)
-    return fused
+    mask_bin = (mask > 0)
+    mask_3ch = np.stack([mask_bin] * 3, axis=-1)
+
+    sonar_strong = cv2.convertScaleAbs(sonar, alpha=1.5, beta=20)
+    sonar_soft = (sonar * 0.4).astype(np.uint8)
+
+    fused = np.where(mask_3ch, sonar_strong, sonar_soft)
+    return fused.astype(np.uint8)
 
 
-# --------------------------------------------------
+# =========================================================
 # PROCESS SINGLE IMAGE
-# --------------------------------------------------
-def process_image_file(img_path, mask_path, output_folder):
-    """Apply sonar + fusion for a single image."""
+# =========================================================
+def process_image(img_path, output_folder, save_mask=False):
     filename = img_path.name
 
-    # Load original image
     img = cv2.imread(str(img_path))
     if img is None:
-        logging.warning(f"Cannot read {filename}")
+        logging.warning(f"❌ Cannot read {filename}")
         return
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    # Load mask
-    mask_file = mask_path / f"{img_path.stem}.png"
-    if not mask_file.exists():
-        logging.warning(f"No mask found for {filename}")
-        return
-    mask = cv2.imread(str(mask_file), cv2.IMREAD_GRAYSCALE)
-    mask = (mask > 127).astype(np.uint8)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    # Apply sonar
-    sonar_img = apply_sonar(img)
+    sonar_img = apply_sonar(img_rgb)
+    mask = generate_mask(img_rgb)
+    fused_img = fuse_lesion_background(img_rgb, sonar_img, mask)
 
-    # Fuse lesion on sonar
-    fused_img = fuse_lesion_background(img, sonar_img, mask)
-
-    # Save results
     sonar_folder = output_folder / "sonar_only"
     fused_folder = output_folder / "fused"
+    mask_folder = output_folder / "pseudo_masks"
+
     sonar_folder.mkdir(parents=True, exist_ok=True)
     fused_folder.mkdir(parents=True, exist_ok=True)
 
-    cv2.imwrite(str(sonar_folder / f"{filename}"), cv2.cvtColor(sonar_img, cv2.COLOR_RGB2BGR))
-    cv2.imwrite(str(fused_folder / f"{filename}"), cv2.cvtColor(fused_img, cv2.COLOR_RGB2BGR))
+    cv2.imwrite(
+        str(sonar_folder / filename),
+        cv2.cvtColor(sonar_img, cv2.COLOR_RGB2BGR)
+    )
 
-    logging.info(f"✅ {filename} processed")
+    cv2.imwrite(
+        str(fused_folder / filename),
+        cv2.cvtColor(fused_img, cv2.COLOR_RGB2BGR)
+    )
+
+    if save_mask:
+        mask_folder.mkdir(parents=True, exist_ok=True)
+        cv2.imwrite(str(mask_folder / f"{img_path.stem}.png"), mask)
+
+    logging.info(f"✅ Processed: {filename}")
 
 
-# --------------------------------------------------
-# PROCESS ALL IMAGES IN PIPELINE
-# --------------------------------------------------
-def process_pipeline(preprocessed_folder, masks_folder, output_folder):
-    """Process all images in a preprocessed pipeline folder."""
-    preprocessed_folder = Path(preprocessed_folder)
-    masks_folder = Path(masks_folder)
+# =========================================================
+# COLLECT IMAGES FROM ONE FOLDER
+# =========================================================
+def collect_images(folder):
+    folder = Path(folder)
+
+    images = sorted(
+        list(folder.glob("*.jpg")) +
+        list(folder.glob("*.jpeg")) +
+        list(folder.glob("*.png"))
+    )
+
+    return images
+
+
+# =========================================================
+# PROCESS ONE INPUT FOLDER
+# =========================================================
+def process_pipeline(input_folder, output_folder, workers=8, save_mask=False):
+    input_folder = Path(input_folder)
     output_folder = Path(output_folder)
+
     output_folder.mkdir(parents=True, exist_ok=True)
 
-    images = sorted(preprocessed_folder.glob("*.jpg"))
-    logging.info(f"{len(images)} images found in {preprocessed_folder}")
+    images = collect_images(input_folder)
 
-    # Parallel processing
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    logging.info(f"📂 Input: {input_folder}")
+    logging.info(f"📂 Output: {output_folder}")
+    logging.info(f"📊 Found {len(images)} images")
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         for img in images:
-            executor.submit(process_image_file, img, masks_folder, output_folder)
+            futures.append(
+                executor.submit(process_image, img, output_folder, save_mask)
+            )
 
-    logging.info(f"🎉 Sonar + fusion complete for {preprocessed_folder}")
+        for future in as_completed(futures):
+            future.result()
 
-
-# --------------------------------------------------
-# PROCESS MULTIPLE PIPELINES
-# --------------------------------------------------
-def process_all_pipelines(pipelines_info):
-    """
-    pipelines_info: list of dicts
-    each dict = {
-        "preprocessed": <folder with preprocessed images>,
-        "masks": <folder with segmentation masks>,
-        "output": <folder to save sonar + fused images>
-    }
-    """
-    for pipeline in pipelines_info:
-        logging.info(f"Processing pipeline: {pipeline['preprocessed']}")
-        process_pipeline(pipeline['preprocessed'], pipeline['masks'], pipeline['output'])
+    logging.info("🎉 Pipeline completed")
 
 
-# ===============================================================
-# EXAMPLE USAGE
-# ===============================================================
-if __name__ == "__main__":
-    pipelines_info = [
+# =========================================================
+# PROCESS HAM10000 TWO PARTS AS ONE INPUT
+# =========================================================
+def process_ham_parts(part1, part2, output_folder, workers=8, save_mask=False):
+    part1 = Path(part1)
+    part2 = Path(part2)
+    output_folder = Path(output_folder)
+
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    images = sorted(
+        list(part1.glob("*.jpg")) +
+        list(part1.glob("*.jpeg")) +
+        list(part1.glob("*.png")) +
+        list(part2.glob("*.jpg")) +
+        list(part2.glob("*.jpeg")) +
+        list(part2.glob("*.png"))
+    )
+
+    logging.info(f"📂 HAM part1: {part1}")
+    logging.info(f"📂 HAM part2: {part2}")
+    logging.info(f"📂 Output: {output_folder}")
+    logging.info(f"📊 Found {len(images)} HAM10000 images")
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for img in images:
+            futures.append(
+                executor.submit(process_image, img, output_folder, save_mask)
+            )
+
+        for future in as_completed(futures):
+            future.result()
+
+    logging.info("🎉 HAM10000 parts pipeline completed")
+
+
+# =========================================================
+# PROCESS MULTIPLE CONFIGS
+# =========================================================
+def process_multiple(configs, workers=8, save_mask=False):
+    for cfg in configs:
+        name = cfg.get("name", "unnamed")
+        mode = cfg.get("mode", "single")
+
+        logging.info(f"🚀 Processing config: {name}")
+
+        if mode == "single":
+            process_pipeline(
+                input_folder=cfg["input"],
+                output_folder=cfg["output"],
+                workers=workers,
+                save_mask=save_mask
+            )
+
+        elif mode == "ham_parts":
+            process_ham_parts(
+                part1=cfg["part1"],
+                part2=cfg["part2"],
+                output_folder=cfg["output"],
+                workers=workers,
+                save_mask=save_mask
+            )
+
+        else:
+            logging.warning(f"⚠️ Unknown mode for config: {name}")
+
+
+# =========================================================
+# BUILD DEFAULT CONFIGS FOR 4 PIPELINES × 2 DATASETS
+# =========================================================
+def build_default_configs():
+    configs = [
+        # -------------------------------------------------
+        # ISIC 2024 - pipeline1
+        # -------------------------------------------------
         {
-            "preprocessed": r"/aakaou/pipeline1_processed_images",
-            "masks": r"/aakaou/pipeline1_seg_masks",
-            "output": r"/aakaou/pipeline1_sonar_output"
+            "name": "isic2024_pipeline1",
+            "mode": "single",
+            "input": "/path/to/pipeline1/processed_images",
+            "output": "/path/to/pipeline1/sonar_output"
         },
+
+        # -------------------------------------------------
+        # ISIC 2024 - pipeline2
+        # -------------------------------------------------
         {
-            "preprocessed": r"/aakaou/pipeline2_processed_images",
-            "masks": r"/aakaou/pipeline2_seg_masks",
-            "output": r"/aakaou/pipeline2_sonar_output"
+            "name": "isic2024_pipeline2",
+            "mode": "single",
+            "input": "/path/to/pipeline2/processed_images",
+            "output": "/path/to/pipeline2/sonar_output"
         },
+
+        # -------------------------------------------------
+        # ISIC 2024 - pipeline3
+        # -------------------------------------------------
         {
-            "preprocessed": r"/aakaou/pipeline3_processed_images",
-            "masks": r"/aakaou/pipeline3_seg_masks",
-            "output": r"/aakaou/pipeline3_sonar_output"
+            "name": "isic2024_pipeline3",
+            "mode": "single",
+            "input": "/path/to/pipeline3/processed_images",
+            "output": "/path/to/pipeline3/sonar_output"
         },
+
+        # -------------------------------------------------
+        # ISIC 2024 - pipeline4
+        # -------------------------------------------------
         {
-            "preprocessed": r"/aakaou/pipeline4_processed_images",
-            "masks": r"/aakaou/pipeline4_seg_masks",
-            "output": r"/aakaou/pipeline4_sonar_output"
+            "name": "isic2024_pipeline4",
+            "mode": "single",
+            "input": "/path/to/pipeline4/processed_images",
+            "output": "/path/to/pipeline4/sonar_output"
+        },
+
+        # -------------------------------------------------
+        # HAM10000 - pipeline1
+        # -------------------------------------------------
+        {
+            "name": "ham10000_pipeline1",
+            "mode": "single",
+            "input": "/path/to/ham10000/pipeline1/processed_images",
+            "output": "/path/to/ham10000/pipeline1/sonar_output"
+        },
+
+        # -------------------------------------------------
+        # HAM10000 - pipeline2
+        # -------------------------------------------------
+        {
+            "name": "ham10000_pipeline2",
+            "mode": "single",
+            "input": "/path/to/ham10000/pipeline2/processed_images",
+            "output": "/path/to/ham10000/pipeline2/sonar_output"
+        },
+
+        # -------------------------------------------------
+        # HAM10000 - pipeline3
+        # -------------------------------------------------
+        {
+            "name": "ham10000_pipeline3",
+            "mode": "single",
+            "input": "/path/to/ham10000/pipeline3/processed_images",
+            "output": "/path/to/ham10000/pipeline3/sonar_output"
+        },
+
+        # -------------------------------------------------
+        # HAM10000 - pipeline4
+        # -------------------------------------------------
+        {
+            "name": "ham10000_pipeline4",
+            "mode": "single",
+            "input": "/path/to/ham10000/pipeline4/processed_images",
+            "output": "/path/to/ham10000/pipeline4/sonar_output"
         }
     ]
 
-    process_all_pipelines(pipelines_info)
+    return configs
+
+
+# =========================================================
+# CLI
+# =========================================================
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--input", type=str, help="Input folder")
+    parser.add_argument("--output", type=str, help="Output folder")
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--save_mask", action="store_true")
+    parser.add_argument(
+        "--run_default",
+        action="store_true",
+        help="Run default 4 pipelines for HAM10000 and ISIC2024"
+    )
+
+    return parser.parse_args()
+
+
+# =========================================================
+# MAIN
+# =========================================================
+if __name__ == "__main__":
+    args = parse_args()
+
+    # Manual single run
+    if args.input and args.output:
+        process_pipeline(
+            input_folder=args.input,
+            output_folder=args.output,
+            workers=args.workers,
+            save_mask=args.save_mask
+        )
+
+    # Default multi-run
+    elif args.run_default:
+        configs = build_default_configs()
+        process_multiple(
+            configs=configs,
+            workers=args.workers,
+            save_mask=args.save_mask
+        )
+
+    # Fallback example
+    else:
+        configs = [
+            {
+                "name": "isic2024_pipeline4_example",
+                "mode": "single",
+                "input": "/path/to/pipeline4/processed_images",
+                "output": "/path/to/pipeline4/sonar_output"
+            }
+        ]
+
+        process_multiple(
+            configs=configs,
+            workers=8,
+            save_mask=True
+        )
