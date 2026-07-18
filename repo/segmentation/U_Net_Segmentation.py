@@ -1,163 +1,399 @@
-# unet_segmentation_from_sonar.py
-# ===============================================================
-# U-Net Segmentation using sonar-processed images
-# Input: sonar-only images
-# Output: binary masks + segmentation overlays
-# ===============================================================
-
 import os
-from pathlib import Path
 import cv2
 import numpy as np
-import logging
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.metrics import MeanIoU
+from tensorflow.keras import layers, Model
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.model_selection import train_test_split
 
-logging.basicConfig(level=logging.INFO)
+# ======================================================
+# SETTINGS
+# ======================================================
 
-# ===============================================================
-# U-NET MODEL DEFINITION
-# ===============================================================
-def build_unet(input_size=(256, 256, 3)):
-    inputs = Input(input_size)
+IMG_SIZE = 256
+BATCH_SIZE = 8
+EPOCHS = 1
+SEED = 42
+VAL_SPLIT = 0.2
 
-    # Encoder
-    c1 = Conv2D(64, 3, activation='relu', padding='same')(inputs)
-    c1 = Conv2D(64, 3, activation='relu', padding='same')(c1)
-    p1 = MaxPooling2D()(c1)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
 
-    c2 = Conv2D(128, 3, activation='relu', padding='same')(p1)
-    c2 = Conv2D(128, 3, activation='relu', padding='same')(c2)
-    p2 = MaxPooling2D()(c2)
+# ======================================================
+# DICE METRIC
+# ======================================================
 
-    c3 = Conv2D(256, 3, activation='relu', padding='same')(p2)
-    c3 = Conv2D(256, 3, activation='relu', padding='same')(c3)
-    p3 = MaxPooling2D()(c3)
+def dice_coef(y_true, y_pred):
+    smooth = 1e-6
+    y_true_f = tf.keras.backend.flatten(y_true)
+    y_pred_f = tf.keras.backend.flatten(y_pred)
 
-    c4 = Conv2D(512, 3, activation='relu', padding='same')(p3)
-    c4 = Conv2D(512, 3, activation='relu', padding='same')(c4)
+    inter = tf.keras.backend.sum(y_true_f * y_pred_f)
 
-    # Decoder
-    u5 = UpSampling2D()(c4)
-    u5 = concatenate([u5, c3])
-    c5 = Conv2D(256, 3, activation='relu', padding='same')(u5)
+    return (2.0 * inter + smooth) / (
+        tf.keras.backend.sum(y_true_f) +
+        tf.keras.backend.sum(y_pred_f) + smooth
+    )
 
-    u6 = UpSampling2D()(c5)
-    u6 = concatenate([u6, c2])
-    c6 = Conv2D(128, 3, activation='relu', padding='same')(u6)
+# ======================================================
+# U-NET MODEL
+# ======================================================
 
-    u7 = UpSampling2D()(c6)
-    u7 = concatenate([u7, c1])
-    c7 = Conv2D(64, 3, activation='relu', padding='same')(u7)
+def build_unet():
+    inputs = layers.Input((IMG_SIZE, IMG_SIZE, 3))
 
-    outputs = Conv2D(1, 1, activation='sigmoid')(c7)
+    c1 = layers.Conv2D(32, 3, activation="relu", padding="same")(inputs)
+    c1 = layers.Conv2D(32, 3, activation="relu", padding="same")(c1)
+    p1 = layers.MaxPooling2D()(c1)
+
+    c2 = layers.Conv2D(64, 3, activation="relu", padding="same")(p1)
+    c2 = layers.Conv2D(64, 3, activation="relu", padding="same")(c2)
+    p2 = layers.MaxPooling2D()(c2)
+
+    c3 = layers.Conv2D(128, 3, activation="relu", padding="same")(p2)
+    c3 = layers.Conv2D(128, 3, activation="relu", padding="same")(c3)
+
+    u4 = layers.UpSampling2D()(c3)
+    u4 = layers.Concatenate()([u4, c2])
+    c4 = layers.Conv2D(64, 3, activation="relu", padding="same")(u4)
+
+    u5 = layers.UpSampling2D()(c4)
+    u5 = layers.Concatenate()([u5, c1])
+    c5 = layers.Conv2D(32, 3, activation="relu", padding="same")(u5)
+
+    outputs = layers.Conv2D(1, 1, activation="sigmoid")(c5)
 
     model = Model(inputs, outputs)
-    model.compile(optimizer=Adam(1e-4),
-                  loss=BinaryCrossentropy(),
-                  metrics=[MeanIoU(num_classes=2)])
+
+    model.compile(
+        optimizer="adam",
+        loss="binary_crossentropy",
+        metrics=["accuracy", dice_coef]
+    )
+
     return model
 
-# ===============================================================
-# SONAR FUSION FOR OVERLAY
-# ===============================================================
-def fuse_overlay(original, mask):
-    """Fuse lesion onto original sonar image."""
-    mask_bin = (mask > 0).astype(np.uint8)
-    if len(mask_bin.shape) == 2:
-        mask_bin = np.stack([mask_bin]*3, axis=-1)
-    fused = np.where(mask_bin == 1, original, original)  # same as original
-    return fused
+# ======================================================
+# MASK GENERATION
+# ======================================================
 
-# ===============================================================
-# PROCESS SINGLE IMAGE
-# ===============================================================
-def process_image(model, img_path, masks_folder, overlays_folder):
-    filename = img_path.name
+def generate_mask(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # Load sonar image
-    img = cv2.imread(str(img_path))
-    if img is None:
-        logging.warning(f"Cannot read {filename}")
+    _, mask = cv2.threshold(
+        blur,
+        0,
+        255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    kernel = np.ones((3, 3), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    return mask
+
+# ======================================================
+# DATA GENERATOR
+# ======================================================
+
+class DataGenerator(tf.keras.utils.Sequence):
+    def __init__(self, image_paths, batch_size=8):
+        self.image_paths = image_paths
+        self.batch_size = batch_size
+
+    def __len__(self):
+        return int(np.ceil(len(self.image_paths) / self.batch_size))
+
+    def __getitem__(self, idx):
+        batch_paths = self.image_paths[
+            idx * self.batch_size:(idx + 1) * self.batch_size
+        ]
+
+        X = np.zeros(
+            (len(batch_paths), IMG_SIZE, IMG_SIZE, 3),
+            dtype=np.float32
+        )
+        Y = np.zeros(
+            (len(batch_paths), IMG_SIZE, IMG_SIZE, 1),
+            dtype=np.float32
+        )
+
+        for i, img_path in enumerate(batch_paths):
+            img = cv2.imread(str(img_path))
+            if img is None:
+                continue
+
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+
+            mask = generate_mask(img)
+
+            X[i] = img / 255.0
+            Y[i] = mask[..., None] / 255.0
+
+        return X, Y
+
+# ======================================================
+# FUSION FUNCTION
+# ======================================================
+
+def fuse(preprocessed_img, sonar_img, mask):
+    mask = np.clip(mask, 0, 1)
+    mask_3 = np.repeat(mask[:, :, None], 3, axis=2)
+
+    fused = (
+        mask_3 * preprocessed_img +
+        (1 - mask_3) * sonar_img
+    )
+
+    return fused.astype(np.uint8)
+
+# ======================================================
+# IMAGE COLLECTION
+# ======================================================
+
+def collect_images(folder):
+    folder = Path(folder)
+    return sorted(
+        list(folder.glob("*.jpg")) +
+        list(folder.glob("*.jpeg")) +
+        list(folder.glob("*.png"))
+    )
+
+# ======================================================
+# SINGLE EXPERIMENT RUN
+# ======================================================
+
+def run_unet_fusion_experiment(
+    preprocessed_folder,
+    sonar_folder,
+    output_masks,
+    output_final,
+    model_dir,
+    img_size=256,
+    batch_size=8,
+    epochs=1,
+    val_split=0.2,
+    seed=42
+):
+    preprocessed_folder = Path(preprocessed_folder)
+    sonar_folder = Path(sonar_folder)
+    output_masks = Path(output_masks)
+    output_final = Path(output_final)
+    model_dir = Path(model_dir)
+
+    output_masks.mkdir(parents=True, exist_ok=True)
+    output_final.mkdir(parents=True, exist_ok=True)
+    model_dir.mkdir(parents=True, exist_ok=True)
+
+    images = collect_images(preprocessed_folder)
+
+    print("\n====================================================")
+    print("Preprocessed folder:", preprocessed_folder)
+    print("Sonar folder:", sonar_folder)
+    print("Total images:", len(images))
+    print("====================================================\n")
+
+    if len(images) == 0:
+        print("❌ No images found, skipping.")
         return
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    orig_shape = img_rgb.shape[:2]
 
-    # Resize for U-Net
-    img_resized = cv2.resize(img_rgb, (256, 256)) / 255.0
-    img_resized = np.expand_dims(img_resized, axis=0)
+    train_paths, val_paths = train_test_split(
+        images,
+        test_size=val_split,
+        random_state=seed
+    )
 
-    # Predict mask
-    pred = model.predict(img_resized, verbose=0)[0, :, :, 0]
-    mask_bin = (pred > 0.5).astype(np.uint8)
-    mask_resized = cv2.resize(mask_bin, (orig_shape[1], orig_shape[0]), interpolation=cv2.INTER_NEAREST)
+    train_gen = DataGenerator(train_paths, batch_size=batch_size)
+    val_gen = DataGenerator(val_paths, batch_size=batch_size)
 
-    # Save binary mask
-    masks_folder.mkdir(parents=True, exist_ok=True)
-    cv2.imwrite(str(masks_folder / f"{filename}.png"), mask_resized * 255)
+    model = build_unet()
 
-    # Save overlay
-    if overlays_folder:
-        overlays_folder.mkdir(parents=True, exist_ok=True)
-        fused_img = fuse_overlay(img_rgb, mask_resized)
-        cv2.imwrite(str(overlays_folder / filename), cv2.cvtColor(fused_img, cv2.COLOR_RGB2BGR))
+    best_model_path = model_dir / "best_unet.h5"
+    final_model_path = model_dir / "final_unet.h5"
 
-    logging.info(f"✅ {filename} processed")
+    callbacks = [
+        EarlyStopping(patience=3, restore_best_weights=True),
+        ModelCheckpoint(str(best_model_path), save_best_only=True)
+    ]
 
-# ===============================================================
-# PROCESS PIPELINE
-# ===============================================================
-def process_pipeline(model, sonar_folder, masks_folder, overlays_folder):
-    sonar_folder = Path(sonar_folder) / "sonar_only"
-    images = sorted(sonar_folder.glob("*.jpg"))
+    model.fit(
+        train_gen,
+        validation_data=val_gen,
+        epochs=epochs,
+        callbacks=callbacks,
+        verbose=1
+    )
 
-    with ThreadPoolExecutor(max_workers=6) as executor:
-        for img_path in images:
-            executor.submit(process_image, model, img_path, masks_folder, overlays_folder)
+    model.save(str(final_model_path))
 
-# ===============================================================
-# MAIN EXECUTION
-# ===============================================================
-if __name__ == "__main__":
-    pipelines_info = [
+    print("\nRunning inference...")
+
+    for i, img_path in enumerate(images):
+        pre_img_path = preprocessed_folder / img_path.name
+        sonar_img_path = sonar_folder / img_path.name
+
+        if not pre_img_path.exists():
+            print(f"❌ Missing preprocessed image: {pre_img_path}")
+            continue
+
+        if not sonar_img_path.exists():
+            print(f"❌ Missing sonar image: {sonar_img_path}")
+            continue
+
+        pre_img = cv2.imread(str(pre_img_path))
+        sonar_img = cv2.imread(str(sonar_img_path))
+
+        if pre_img is None or sonar_img is None:
+            print(f"❌ Could not read image pair: {img_path.name}")
+            continue
+
+        pre_img = cv2.cvtColor(pre_img, cv2.COLOR_BGR2RGB)
+        sonar_img = cv2.cvtColor(sonar_img, cv2.COLOR_BGR2RGB)
+
+        h, w = pre_img.shape[:2]
+
+        inp = cv2.resize(pre_img, (img_size, img_size)).astype(np.float32) / 255.0
+        inp = np.expand_dims(inp, axis=0)
+
+        pred = model.predict(inp, verbose=0)[0, :, :, 0]
+
+        mask = cv2.resize(pred, (w, h), interpolation=cv2.INTER_LINEAR)
+        mask = np.clip(mask, 0, 1)
+
+        # Keep your original inversion logic
+        mask = 1 - mask
+
+        cv2.imwrite(
+            str(output_masks / f"{img_path.stem}.png"),
+            (mask * 255).astype(np.uint8)
+        )
+
+        fused = fuse(pre_img, sonar_img, mask)
+
+        cv2.imwrite(
+            str(output_final / img_path.name),
+            cv2.cvtColor(fused, cv2.COLOR_RGB2BGR)
+        )
+
+        if (i + 1) % 100 == 0 or (i + 1) == len(images):
+            print(f"Processed {i+1}/{len(images)}")
+
+    print("\nDONE ✔ ALL IMAGES PROCESSED")
+
+# ======================================================
+# DEFAULT CONFIGS
+# ======================================================
+
+def build_default_experiments():
+    experiments = [
+        # --------------------------------------------------
+        # ISIC 2024
+        # --------------------------------------------------
         {
-            "sonar": r"/aakaou/pipeline1_sonar_output",
-            "masks": r"/aakaou/pipeline1_seg_masks",
-            "overlays": r"/aakaou/pipeline1_seg_overlays"
+            "name": "isic2024_pipeline1",
+            "preprocessed_folder": "/path/to/pipeline1/processed_images",
+            "sonar_folder": "/path/to/pipeline1/sonar_output/sonar_only",
+            "output_masks": "/path/to/pipeline1/unet_masks",
+            "output_final": "/path/to/pipeline1/unet_overlays_up",
+            "model_dir": "/path/to/pipeline1/unet_models"
         },
         {
-            "sonar": r"/aakaou/pipeline2_sonar_output",
-            "masks": r"/aakaou/pipeline2_seg_masks",
-            "overlays": r"/aakaou/pipeline2_seg_overlays"
+            "name": "isic2024_pipeline2",
+            "preprocessed_folder": "/path/to/pipeline2/processed_images",
+            "sonar_folder": "/path/to/pipeline2/sonar_output/sonar_only",
+            "output_masks": "/path/to/pipeline2/unet_masks",
+            "output_final": "/path/to/pipeline2/unet_overlays_up",
+            "model_dir": "/path/to/pipeline2/unet_models"
         },
         {
-            "sonar": r"/aakaou/pipeline3_sonar_output",
-            "masks": r"/aakaou/pipeline3_seg_masks",
-            "overlays": r"/aakaou/pipeline3_seg_overlays"
+            "name": "isic2024_pipeline3",
+            "preprocessed_folder": "/path/to/pipeline3/processed_images",
+            "sonar_folder": "/path/to/pipeline3/sonar_output/sonar_only",
+            "output_masks": "/path/to/pipeline3/unet_masks",
+            "output_final": "/path/to/pipeline3/unet_overlays_up",
+            "model_dir": "/path/to/pipeline3/unet_models"
         },
         {
-            "sonar": r"/aakaou/pipeline4_sonar_output",
-            "masks": r"/aakaou/pipeline4_seg_masks",
-            "overlays": r"/aakaou/pipeline4_seg_overlays"
+            "name": "isic2024_pipeline4",
+            "preprocessed_folder": "/path/to/pipeline4/processed_images",
+            "sonar_folder": "/path/to/pipeline4/sonar_output/sonar_only",
+            "output_masks": "/path/to/pipeline4/unet_masks",
+            "output_final": "/path/to/pipeline4/unet_overlays_up",
+            "model_dir": "/path/to/pipeline4/unet_models"
+        },
+
+        # --------------------------------------------------
+        # HAM10000
+        # --------------------------------------------------
+        {
+            "name": "ham10000_pipeline1",
+            "preprocessed_folder": "/path/to/ham10000/pipeline1/processed_images",
+            "sonar_folder": "/path/to/ham10000/pipeline1/sonar_output/sonar_only",
+            "output_masks": "/path/to/ham10000/pipeline1/unet_masks",
+            "output_final": "/path/to/ham10000/pipeline1/unet_overlays_up",
+            "model_dir": "/path/to/ham10000/pipeline1/unet_models"
+        },
+        {
+            "name": "ham10000_pipeline2",
+            "preprocessed_folder": "/path/to/ham10000/pipeline2/processed_images",
+            "sonar_folder": "/path/to/ham10000/pipeline2/sonar_output/sonar_only",
+            "output_masks": "/path/to/ham10000/pipeline2/unet_masks",
+            "output_final": "/path/to/ham10000/pipeline2/unet_overlays_up",
+            "model_dir": "/path/to/ham10000/pipeline2/unet_models"
+        },
+        {
+            "name": "ham10000_pipeline3",
+            "preprocessed_folder": "/path/to/ham10000/pipeline3/processed_images",
+            "sonar_folder": "/path/to/ham10000/pipeline3/sonar_output/sonar_only",
+            "output_masks": "/path/to/ham10000/pipeline3/unet_masks",
+            "output_final": "/path/to/ham10000/pipeline3/unet_overlays_up",
+            "model_dir": "/path/to/ham10000/pipeline3/unet_models"
+        },
+        {
+            "name": "ham10000_pipeline4",
+            "preprocessed_folder": "/path/to/ham10000/pipeline4/processed_images",
+            "sonar_folder": "/path/to/ham10000/pipeline4/sonar_output/sonar_only",
+            "output_masks": "/path/to/ham10000/pipeline4/unet_masks",
+            "output_final": "/path/to/ham10000/pipeline4/unet_overlays_up",
+            "model_dir": "/path/to/ham10000/pipeline4/unet_models"
         }
     ]
 
-    # Build U-Net model
-    unet_model = build_unet()
-    # Load pretrained weights if available
-    # unet_model.load_weights("unet_model_weights.h5")
+    return experiments
 
-    # Process each pipeline
-    for pipe in pipelines_info:
-        logging.info(f"🚀 Processing pipeline: {pipe['sonar']}")
-        process_pipeline(unet_model,
-                         pipe['sonar'],
-                         Path(pipe['masks']),
-                         Path(pipe['overlays']))
+# ======================================================
+# RUN MULTIPLE EXPERIMENTS
+# ======================================================
 
-    logging.info("✅ U-Net segmentation + overlays completed for all pipelines")
+def run_all_experiments(experiments):
+    for exp in experiments:
+        print("\n" + "=" * 70)
+        print("RUNNING:", exp["name"])
+        print("=" * 70)
+
+        run_unet_fusion_experiment(
+            preprocessed_folder=exp["preprocessed_folder"],
+            sonar_folder=exp["sonar_folder"],
+            output_masks=exp["output_masks"],
+            output_final=exp["output_final"],
+            model_dir=exp["model_dir"],
+            img_size=IMG_SIZE,
+            batch_size=BATCH_SIZE,
+            epochs=EPOCHS,
+            val_split=VAL_SPLIT,
+            seed=SEED
+        )
+
+# ======================================================
+# MAIN
+# ======================================================
+
+if __name__ == "__main__":
+    experiments = build_default_experiments()
+    run_all_experiments(experiments)
