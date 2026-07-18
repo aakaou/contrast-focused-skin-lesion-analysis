@@ -94,13 +94,13 @@ DATASET_CONFIGS = [
     {
         "name": "ISIC2024_pipeline_each_time",
         "dataset_type": "isic2024",
-        "img_dir": "/path/to/isic/unet_overlays_up",
-        "csv_file": "/path/to/isic/train_metadata_clean_full.csv",
+        "img_dir": "/path/to/unet_overlays_up",
+        "csv_file": "/path/to/train_metadata_clean_full.csv",
         "img_col": "isic_id",
         "label_col": "target",
         "patient_col": "patient_id",
         "file_ext": ".jpg",
-        "output_dir": "/path/to/isic/efficientb2_results"
+        "output_dir": "/path/to/efficientb2_results"
     },
     {
         "name": "HAM10000_pipeline_each_time",
