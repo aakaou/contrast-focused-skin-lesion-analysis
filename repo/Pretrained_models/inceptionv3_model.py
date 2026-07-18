@@ -1,212 +1,697 @@
-# ======================================================
-# inceptionv3_all_pipelines.py
-# ======================================================
+# ==========================================================
+# FULL INCEPTIONV3 CLINICAL PIPELINE
+# FOR TWO DATASET TYPES:
+#   1) ISIC 2024-style metadata
+#   2) HAM10000-style metadata
+# ==========================================================
 
-import pandas as pd
-import numpy as np
+import os
+import copy
+import json
+import random
 from pathlib import Path
-from sklearn.model_selection import train_test_split
 
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications.inception_v3 import preprocess_input
-from tensorflow.keras.applications import InceptionV3
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
-from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import EarlyStopping
+import numpy as np
+import pandas as pd
+from PIL import Image
 
-# =========================
-# PARAMETERS
-# =========================
+import torch
+import torch.nn as nn
 
-IMG_SIZE = (299, 299)  # InceptionV3 default input size
-BATCH_SIZE = 16        # Number of samples per batch
-EPOCHS = 5             # Number of training epochs
-NUM_CLASSES = 7        # Number of lesion classes
+from torch.utils.data import (
+    Dataset,
+    DataLoader,
+    WeightedRandomSampler
+)
 
-metadata_file = "/aakaou/HAM10000_metadata.csv"
+from torchvision import (
+    models,
+    transforms
+)
 
-# =========================
-# PIPELINES
-# =========================
+from sklearn.model_selection import GroupShuffleSplit
 
-pipelines_info = [
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    roc_curve,
+    auc,
+    precision_recall_curve,
+    average_precision_score,
+    balanced_accuracy_score
+)
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ==========================================================
+# SETTINGS
+# ==========================================================
+
+IMG_SIZE = 299          # InceptionV3 default
+BATCH_SIZE = 16
+EPOCHS = 10             # increase from 1 for real training
+LR = 1e-4
+NUM_WORKERS = 4
+RANDOM_STATE = 42
+TEST_SIZE = 0.20
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Device:", DEVICE)
+
+# ==========================================================
+# REPRODUCIBILITY
+# ==========================================================
+
+def seed_everything(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+seed_everything(RANDOM_STATE)
+
+# ==========================================================
+# DATASET CONFIGS
+# ==========================================================
+
+DATASET_CONFIGS = [
     {
-        "images": r"/aakaou/pipeline1_seg_overlays",
-        "csv": r"/aakaou/pipeline1_inceptionv3_predictions.csv"
+        "name": "ISIC2024_pipeline_each_time",
+        "dataset_type": "isic2024",
+        "img_dir": "/path/to/pipeline4/unet_overlays_up",
+        "csv_file": "/path/to/train_metadata_clean_full.csv",
+        "img_col": "isic_id",
+        "label_col": "target",
+        "patient_col": "patient_id",
+        "file_ext": ".jpg",
+        "output_dir": "/path/to/inceptionv3_results"
     },
-
     {
-        "images": r"/aakaou/pipeline2_seg_overlays",
-        "csv": r"/aakaou/pipeline2_inceptionv3_predictions.csv"
-    },
-
-    {
-        "images": r"/aakaou/pipeline3_seg_overlays",
-        "csv": r"/aakaou/pipeline3_inceptionv3_predictions.csv"
-    },
-
-    {
-        "images": r"/aakaou/pipeline4_overlays",
-        "csv": r"/aakaou/pipeline4_inceptionv3_predictions.csv"
+        "name": "HAM10000_pipeline_each_time",
+        "dataset_type": "ham10000",
+        "img_dir": "/path/to/ham10000/pipeline4/unet_overlays_up",
+        "csv_file": "/path/to/ham10000/HAM10000_metadata_clean.csv",
+        "img_col": "image_id",
+        "label_col": "dx",
+        "patient_col": "lesion_id",
+        "file_ext": ".jpg",
+        "output_dir": "/path/to/ham10000/inceptionv3_results"
     }
-
 ]
 
-# =========================
-# LOAD METADATA
-# =========================
+# ==========================================================
+# TRANSFORMS
+# ==========================================================
 
-meta_df = pd.read_csv(metadata_file)
+train_transform = transforms.Compose([
+    transforms.Resize((IMG_SIZE, IMG_SIZE)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomVerticalFlip(p=0.5),
+    transforms.RandomRotation(degrees=20),
+    transforms.ColorJitter(
+        brightness=0.2,
+        contrast=0.2,
+        saturation=0.2,
+        hue=0.05
+    ),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
 
-class_names = ['nv','mel','bkl','bcc','akiec','vasc','df']
-class_map = {cls: i for i, cls in enumerate(class_names)}
+test_transform = transforms.Compose([
+    transforms.Resize((IMG_SIZE, IMG_SIZE)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
 
-meta_df["label"] = meta_df["dx"].map(class_map)
-meta_df["filename"] = meta_df["image_id"] + ".jpg"  # Keep .jpg for consistency
+# ==========================================================
+# DATASET CLASS
+# ==========================================================
 
-# ======================================================
-# LOOP THROUGH PIPELINES
-# ======================================================
+class SkinDataset(Dataset):
+    def __init__(self, dataframe, transform, label_col, img_id_col):
+        self.df = dataframe.reset_index(drop=True)
+        self.transform = transform
+        self.label_col = label_col
+        self.img_id_col = img_id_col
 
-def create_generator(df, folder, augment=False):
-    """Creates an ImageDataGenerator from a dataframe."""
-    if augment:
-        datagen = ImageDataGenerator(
-            preprocessing_function=preprocess_input,
-            horizontal_flip=True,
-            rotation_range=15,
-            zoom_range=0.2
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, idx):
+        row = self.df.iloc[idx]
+
+        image = Image.open(row["path"]).convert("RGB")
+        image = self.transform(image)
+
+        label = torch.tensor(float(row[self.label_col]), dtype=torch.float32)
+        image_id = str(row[self.img_id_col])
+
+        return image, label, image_id
+
+# ==========================================================
+# FOCAL LOSS
+# ==========================================================
+
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=0.75, gamma=2):
+        super().__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+
+    def forward(self, inputs, targets):
+        bce = nn.functional.binary_cross_entropy_with_logits(
+            inputs,
+            targets,
+            reduction="none"
         )
-    else:
-        datagen = ImageDataGenerator(
-            preprocessing_function=preprocess_input
-        )
-    
-    return datagen.flow_from_dataframe(
-        dataframe=df,
-        directory=folder,
-        x_col='filename',
-        y_col='label',
-        target_size=IMG_SIZE,
-        class_mode='raw',
-        batch_size=BATCH_SIZE,
-        shuffle=augment
+        pt = torch.exp(-bce)
+        loss = self.alpha * (1 - pt) ** self.gamma * bce
+        return loss.mean()
+
+# ==========================================================
+# INCEPTIONV3 MODEL
+# ==========================================================
+
+def build_model():
+    # InceptionV3 with auxiliary logits
+    model = models.inception_v3(
+        weights=models.Inception_V3_Weights.IMAGENET1K_V1,
+        aux_logits=True
     )
 
-for pipe in pipelines_info:
+    # Main classifier
+    model.fc = nn.Linear(
+        model.fc.in_features,
+        1
+    )
 
-    print(f"\n🚀 Training InceptionV3 on {pipe['images']}")
+    # Auxiliary classifier
+    model.AuxLogits.fc = nn.Linear(
+        model.AuxLogits.fc.in_features,
+        1
+    )
 
-    image_folder = Path(pipe["images"])
+    return model.to(DEVICE)
 
-    # =========================
-    # FILTER EXISTING IMAGES
-    # =========================
+# ==========================================================
+# HELPERS
+# ==========================================================
 
-    df = meta_df.copy()
-    df = df[df["filename"].apply(lambda x: (image_folder / x).exists())]
+def ensure_dir(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
 
-    print(f"✅ Images found: {len(df)}")
+def save_json(obj, path):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=4)
+
+def safe_group_column(df, preferred_group_col, fallback_img_col):
+    if preferred_group_col in df.columns:
+        return preferred_group_col
+    return fallback_img_col
+
+def build_paths(df, img_dir, img_col, file_ext):
+    df = df.copy()
+    df["path"] = df[img_col].astype(str).apply(
+        lambda x: str(Path(img_dir) / f"{x}{file_ext}")
+    )
+    df = df[df["path"].apply(os.path.exists)].reset_index(drop=True)
+    return df
+
+def create_binary_target_if_needed(df, label_col, dataset_type):
+    df = df.copy()
+
+    if label_col not in df.columns:
+        raise ValueError(f"Label column '{label_col}' not found in dataframe.")
+
+    if not pd.api.types.is_numeric_dtype(df[label_col]):
+        if dataset_type == "ham10000":
+            # example mapping; adapt if your labels differ
+            mapping = {
+                "mel": 1,
+                "bcc": 1,
+                "akiec": 1,
+                "nv": 0,
+                "bkl": 0,
+                "df": 0,
+                "vasc": 0
+            }
+            df[label_col] = df[label_col].map(mapping)
+
+    df = df.dropna(subset=[label_col]).copy()
+    df[label_col] = df[label_col].astype(int)
+    return df
+
+def make_weighted_sampler(train_df, label_col):
+    class_counts = train_df[label_col].value_counts().to_dict()
+    weights = train_df[label_col].map(
+        lambda x: 1.0 / class_counts[x]
+    ).values
+    weights = torch.DoubleTensor(weights)
+
+    sampler = WeightedRandomSampler(
+        weights=weights,
+        num_samples=len(weights),
+        replacement=True
+    )
+    return sampler
+
+def evaluate_model(model, loader):
+    model.eval()
+    y_true = []
+    y_probs = []
+    image_ids = []
+
+    with torch.no_grad():
+        for images, labels, ids in loader:
+            images = images.to(DEVICE)
+            # In eval, InceptionV3 returns only main logits
+            outputs = model(images).squeeze()
+            probs = torch.sigmoid(outputs)
+
+            if probs.ndim == 0:
+                probs = probs.unsqueeze(0)
+
+            y_probs.extend(probs.cpu().numpy().tolist())
+            y_true.extend(labels.numpy().tolist())
+            image_ids.extend(list(ids))
+
+    y_true = np.array(y_true)
+    y_probs = np.array(y_probs)
+
+    return y_true, y_probs, image_ids
+
+def optimize_threshold(y_true, y_probs):
+    precision, recall, thresholds = precision_recall_curve(y_true, y_probs)
+    f1_scores = (2 * precision * recall) / (precision + recall + 1e-8)
+
+    if len(thresholds) == 0:
+        return 0.5, precision, recall, thresholds
+
+    best_idx = np.argmax(f1_scores[:-1])
+    best_threshold = thresholds[best_idx]
+    return best_threshold, precision, recall, thresholds
+
+def save_confusion_matrix(cm, out_path, title):
+    plt.figure(figsize=(7, 6))
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        xticklabels=["Benign", "Malignant"],
+        yticklabels=["Benign", "Malignant"]
+    )
+    plt.title(title)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=300)
+    plt.close()
+
+def save_roc_curve(y_true, y_probs, out_path, title):
+    fpr_m, tpr_m, _ = roc_curve(y_true, y_probs)
+    auc_m = auc(fpr_m, tpr_m)
+
+    fpr_b, tpr_b, _ = roc_curve(1 - y_true, 1 - y_probs)
+    auc_b = auc(fpr_b, tpr_b)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr_b, tpr_b, label=f"Benign (AUC={auc_b:.4f})")
+    plt.plot(fpr_m, tpr_m, label=f"Malignant (AUC={auc_m:.4f})")
+    plt.plot([0, 1], [0, 1], "--")
+    plt.title(title)
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=300)
+    plt.close()
+
+    return auc_m, auc_b
+
+def save_pr_curve(recall, precision, pr_auc, out_path, title):
+    plt.figure(figsize=(8, 6))
+    plt.plot(recall, precision, label=f"PR-AUC={pr_auc:.4f}")
+    plt.title(title)
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=300)
+    plt.close()
+
+# ==========================================================
+# MAIN RUN FUNCTION
+# ==========================================================
+
+def run_pipeline(cfg):
+    print("\n" + "=" * 70)
+    print(f"Running: {cfg['name']}")
+    print("=" * 70)
+
+    img_dir = Path(cfg["img_dir"])
+    csv_file = Path(cfg["csv_file"])
+    img_col = cfg["img_col"]
+    label_col = cfg["label_col"]
+    patient_col = cfg["patient_col"]
+    file_ext = cfg["file_ext"]
+    output_dir = Path(cfg["output_dir"])
+    dataset_type = cfg["dataset_type"]
+
+    ensure_dir(output_dir)
+
+    # ------------------------------------------------------
+    # LOAD DATA
+    # ------------------------------------------------------
+    print("\nLoading metadata...")
+    df = pd.read_csv(csv_file)
+
+    df = create_binary_target_if_needed(df, label_col, dataset_type)
+    df = build_paths(df, img_dir, img_col, file_ext)
+
+    print("\nDataset loaded")
+    print("Total samples:", len(df))
 
     if len(df) == 0:
-        print(f"❌ No images found in {image_folder}")
-        continue
+        print("No valid image paths found. Skipping.")
+        return None
 
-    # =========================
-    # TRAIN / VAL SPLIT
-    # =========================
+    print("\nClass distribution:")
+    print(df[label_col].value_counts())
 
-    train_df, val_df = train_test_split(
-        df,
-        test_size=0.2,
-        stratify=df["label"],
-        random_state=42
+    # ------------------------------------------------------
+    # GROUP SPLIT
+    # ------------------------------------------------------
+    print("\nPerforming patient/lesion-level split...")
+
+    group_col = safe_group_column(df, patient_col, img_col)
+
+    gss = GroupShuffleSplit(
+        n_splits=1,
+        test_size=TEST_SIZE,
+        random_state=RANDOM_STATE
     )
 
-    # =========================
-    # DATA GENERATORS
-    # =========================
-
-    train_data = create_generator(train_df, image_folder, augment=True)
-    val_data = create_generator(val_df, image_folder, augment=False)
-
-    # =========================
-    # INCEPTIONV3 BACKBONE
-    # =========================
-
-    base_model = InceptionV3(
-        weights='imagenet',
-        include_top=False,
-        input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3)
+    train_idx, test_idx = next(
+        gss.split(df, groups=df[group_col])
     )
 
-    base_model.trainable = False
+    train_df = df.iloc[train_idx].reset_index(drop=True)
+    test_df = df.iloc[test_idx].reset_index(drop=True)
 
-    # Classification head
-    x = base_model.output
-    x = GlobalAveragePooling2D()(x)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(0.5)(x)
-    x = Dense(256, activation='relu')(x)
-    outputs = Dense(NUM_CLASSES, activation='softmax')(x)
+    print("\nTrain size:", len(train_df))
+    print("Test size :", len(test_df))
 
-    model = Model(inputs=base_model.input, outputs=outputs)
+    print("\nTrain distribution:")
+    print(train_df[label_col].value_counts())
 
-    model.compile(
-        optimizer='adam',
-        loss='sparse_categorical_crossentropy',
-        metrics=['accuracy']
+    print("\nTest distribution:")
+    print(test_df[label_col].value_counts())
+
+    # ------------------------------------------------------
+    # DATASETS
+    # ------------------------------------------------------
+    train_dataset = SkinDataset(
+        train_df,
+        train_transform,
+        label_col=label_col,
+        img_id_col=img_col
     )
 
-    print("✅ InceptionV3 model ready")
-
-    # =========================
-    # TRAIN MODEL
-    # =========================
-
-    early_stop = EarlyStopping(
-        monitor='val_loss',
-        patience=3,
-        restore_best_weights=True
+    test_dataset = SkinDataset(
+        test_df,
+        test_transform,
+        label_col=label_col,
+        img_id_col=img_col
     )
 
-    model.fit(
-        train_data,
-        validation_data=val_data,
-        epochs=EPOCHS,
-        callbacks=[early_stop]
+    # ------------------------------------------------------
+    # DATALOADERS
+    # ------------------------------------------------------
+    print("\nCreating weighted sampler...")
+    sampler = make_weighted_sampler(train_df, label_col)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        sampler=sampler,
+        num_workers=NUM_WORKERS,
+        pin_memory=True
     )
 
-    # =========================
-    # PREDICTIONS
-    # =========================
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=False,
+        num_workers=NUM_WORKERS,
+        pin_memory=True
+    )
 
-    val_data.reset()
-    y_true = val_df['label'].values
-    probs = model.predict(val_data, verbose=1)
-    y_pred = np.argmax(probs, axis=1)
-    confidence = np.max(probs, axis=1)
+    print("\nDataLoaders ready")
 
-    # =========================
-    # SAVE RESULTS
-    # =========================
+    # ------------------------------------------------------
+    # MODEL + OPTIMIZER + SCHEDULER
+    # ------------------------------------------------------
+    print("\nLoading InceptionV3...")
+    model = build_model()
+    print("Model loaded ✔")
 
-    results = pd.DataFrame({
-        "filename": val_df["filename"].values,
-        "actual_class_id": y_true,
-        "actual_class_name": [class_names[i] for i in y_true],
-        "pred_class_id": y_pred,
-        "pred_class_name": [class_names[i] for i in y_pred],
-        "confidence": confidence
+    criterion = FocalLoss(alpha=0.75, gamma=2)
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=LR
+    )
+
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode="max",
+        factor=0.5,
+        patience=2
+    )
+
+    # ------------------------------------------------------
+    # TRAIN
+    # ------------------------------------------------------
+    best_pr_auc = -1.0
+    best_state = None
+    history = []
+
+    print("\nTraining InceptionV3...\n")
+
+    for epoch in range(EPOCHS):
+        model.train()
+        train_loss = 0.0
+
+        for images, labels, _ in train_loader:
+            images = images.to(DEVICE)
+            labels = labels.to(DEVICE)
+
+            optimizer.zero_grad()
+
+            # In train mode, InceptionV3 returns (logits, aux_logits)
+            outputs, aux_outputs = model(images)
+
+            outputs = outputs.squeeze()
+            aux_outputs = aux_outputs.squeeze()
+
+            if outputs.ndim == 0:
+                outputs = outputs.unsqueeze(0)
+            if aux_outputs.ndim == 0:
+                aux_outputs = aux_outputs.unsqueeze(0)
+
+            loss1 = criterion(outputs, labels)
+            loss2 = criterion(aux_outputs, labels)
+            loss = loss1 + 0.4 * loss2
+
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item()
+
+        avg_loss = train_loss / max(len(train_loader), 1)
+
+        val_true, val_probs, _ = evaluate_model(model, test_loader)
+        pr_auc = average_precision_score(val_true, val_probs)
+
+        scheduler.step(pr_auc)
+
+        history.append({
+            "epoch": epoch + 1,
+            "train_loss": avg_loss,
+            "val_pr_auc": float(pr_auc)
+        })
+
+        print(
+            f"Epoch {epoch + 1:02d}/{EPOCHS} | "
+            f"Loss={avg_loss:.4f} | "
+            f"PR-AUC={pr_auc:.4f}"
+        )
+
+        if pr_auc > best_pr_auc:
+            best_pr_auc = pr_auc
+            best_state = copy.deepcopy(model.state_dict())
+            print("Best model updated ✔")
+
+    print("\nTraining finished")
+    print("Best PR-AUC:", best_pr_auc)
+
+    best_model_path = output_dir / "best_inceptionv3.pth"
+    torch.save(best_state, best_model_path)
+
+    history_df = pd.DataFrame(history)
+    history_df.to_csv(output_dir / "training_history_inceptionv3.csv", index=False)
+
+    # ------------------------------------------------------
+    # LOAD BEST MODEL
+    # ------------------------------------------------------
+    model.load_state_dict(torch.load(best_model_path, map_location=DEVICE))
+    model.eval()
+
+    print("Best InceptionV3 loaded ✔")
+
+    # ------------------------------------------------------
+    # FINAL EVALUATION
+    # ------------------------------------------------------
+    print("\nRunning evaluation...")
+
+    y_true, y_probs, image_ids = evaluate_model(model, test_loader)
+
+    best_threshold, precision, recall, thresholds = optimize_threshold(y_true, y_probs)
+    print("\nBest Threshold:", best_threshold)
+
+    y_pred = (y_probs >= best_threshold).astype(int)
+
+    # ------------------------------------------------------
+    # SAVE PREDICTIONS
+    # ------------------------------------------------------
+    pred_df = pd.DataFrame({
+        "image_id": image_ids,
+        "true_label": y_true,
+        "predicted_label": y_pred,
+        "probability": y_probs
     })
+    pred_df.to_csv(output_dir / "inceptionv3_predictions.csv", index=False)
+    print("Saved predictions ✔")
 
-    for i, name in enumerate(class_names):
-        results[f"prob_{name}"] = probs[:, i]
+    # ------------------------------------------------------
+    # CLASSIFICATION REPORT
+    # ------------------------------------------------------
+    report = classification_report(
+        y_true,
+        y_pred,
+        target_names=["Benign", "Malignant"],
+        output_dict=True,
+        zero_division=0
+    )
 
-    results.to_csv(pipe["csv"], index=False)
-    print(f"✅ Predictions saved → {pipe['csv']}")
+    report_df = pd.DataFrame(report).transpose()
+    report_df.to_csv(output_dir / "classification_report_inceptionv3.csv")
 
-print("\n🎯 All pipelines completed")
+    print("\nClassification report:")
+    print(report_df)
 
+    # ------------------------------------------------------
+    # CONFUSION MATRIX
+    # ------------------------------------------------------
+    cm = confusion_matrix(y_true, y_pred)
+    save_confusion_matrix(
+        cm,
+        output_dir / "confusion_matrix_inceptionv3.png",
+        f"{cfg['name']} Confusion Matrix"
+    )
+
+    # ------------------------------------------------------
+    # ROC CURVE
+    # ------------------------------------------------------
+    auc_m, auc_b = save_roc_curve(
+        y_true,
+        y_probs,
+        output_dir / "roc_auc_inceptionv3.png",
+        f"{cfg['name']} ROC Curve"
+    )
+
+    # ------------------------------------------------------
+    # PR CURVE
+    # ------------------------------------------------------
+    pr_auc = average_precision_score(y_true, y_probs)
+    save_pr_curve(
+        recall,
+        precision,
+        pr_auc,
+        output_dir / "precision_recall_inceptionv3.png",
+        f"{cfg['name']} Precision-Recall Curve"
+    )
+
+    # ------------------------------------------------------
+    # FINAL METRICS
+    # ------------------------------------------------------
+    bal_acc = balanced_accuracy_score(y_true, y_pred)
+
+    summary = {
+        "dataset_name": cfg["name"],
+        "n_samples_total": int(len(df)),
+        "n_train": int(len(train_df)),
+        "n_test": int(len(test_df)),
+        "best_threshold": float(best_threshold),
+        "balanced_accuracy": float(bal_acc),
+        "roc_auc_malignant": float(auc_m),
+        "roc_auc_benign": float(auc_b),
+        "pr_auc": float(pr_auc),
+        "best_validation_pr_auc": float(best_pr_auc)
+    }
+
+    summary_df = pd.DataFrame([summary])
+    summary_df.to_csv(output_dir / "final_metrics_summary_inceptionv3.csv", index=False)
+    save_json(summary, output_dir / "final_metrics_summary_inceptionv3.json")
+
+    print("\n==============================")
+    print(f"{cfg['name']} InceptionV3 Results")
+    print("==============================")
+    print(f"Balanced Accuracy : {bal_acc:.4f}")
+    print(f"ROC-AUC Malignant : {auc_m:.4f}")
+    print(f"ROC-AUC Benign    : {auc_b:.4f}")
+    print(f"PR-AUC            : {pr_auc:.4f}")
+    print("==============================")
+    print("Pipeline finished ✔")
+
+    return summary
+
+# ==========================================================
+# MAIN
+# ==========================================================
+
+if __name__ == "__main__":
+    all_results = []
+
+    for cfg in DATASET_CONFIGS:
+        result = run_pipeline(cfg)
+        if result is not None:
+            all_results.append(result)
+
+    if len(all_results) > 0:
+        combined_df = pd.DataFrame(all_results)
+
+        combined_out = Path("./combined_inceptionv3_results")
+        ensure_dir(combined_out)
+
+        combined_df.to_csv(
+            combined_out / "all_datasets_summary_inceptionv3.csv",
+            index=False
+        )
+        save_json(
+            all_results,
+            combined_out / "all_datasets_summary_inceptionv3.json"
+        )
+
+        print("\nCombined results saved ✔")
+        print(combined_df)
