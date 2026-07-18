@@ -100,7 +100,7 @@ DATASET_CONFIGS = [
         "label_col": "target",
         "patient_col": "patient_id",
         "file_ext": ".jpg",
-        "output_dir": "/path/to/isic/efficientb4_results"
+        "output_dir": "/path/to/efficientb4_results"
     },
     {
         "name": "HAM10000_pipeline_each_time",
