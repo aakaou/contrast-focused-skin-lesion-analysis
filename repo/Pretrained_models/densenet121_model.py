@@ -1,5 +1,5 @@
 # ==========================================================
-# FULL DENSENET201 CLINICAL PIPELINE
+# FULL DENSENET121 CLINICAL PIPELINE
 # FOR TWO DATASET TYPES:
 #   1) ISIC 2024-style metadata
 #   2) HAM10000-style metadata
@@ -50,7 +50,7 @@ import seaborn as sns
 
 IMG_SIZE = 224
 BATCH_SIZE = 16
-EPOCHS = 10
+EPOCHS = 10          # increase from 1 for real training
 LR = 1e-4
 NUM_WORKERS = 4
 RANDOM_STATE = 42
@@ -79,13 +79,13 @@ DATASET_CONFIGS = [
     {
         "name": "ISIC2024_pipeline_each_time",
         "dataset_type": "isic2024",
-        "img_dir": "/path//pipeline/unet_overlays_up",
+        "img_dir": "/path/to/pipeline/unet_overlays_up",
         "csv_file": "/path/to/train_metadata_clean_full.csv",
         "img_col": "isic_id",
         "label_col": "target",
         "patient_col": "patient_id",
         "file_ext": ".jpg",
-        "output_dir": "/path/to/densenet201_results"
+        "output_dir": "/path/to/densenet121_results"
     },
     {
         "name": "HAM10000_pipeline_each_time",
@@ -96,7 +96,7 @@ DATASET_CONFIGS = [
         "label_col": "dx",
         "patient_col": "lesion_id",
         "file_ext": ".jpg",
-        "output_dir": "/path/to/ham10000/densenet201_results"
+        "output_dir": "/path/to/ham10000/densenet121_results"
     }
 ]
 
@@ -177,12 +177,12 @@ class FocalLoss(nn.Module):
         return loss.mean()
 
 # ==========================================================
-# DENSENET201 MODEL
+# DENSENET121 MODEL
 # ==========================================================
 
 def build_model():
-    model = models.densenet201(
-        weights=models.DenseNet201_Weights.IMAGENET1K_V1
+    model = models.densenet121(
+        weights=models.DenseNet121_Weights.IMAGENET1K_V1
     )
     model.classifier = nn.Linear(
         model.classifier.in_features,
@@ -222,7 +222,6 @@ def create_binary_target_if_needed(df, label_col, dataset_type):
 
     if not pd.api.types.is_numeric_dtype(df[label_col]):
         if dataset_type == "ham10000":
-            # example mapping: mel/bcc/akiec → malignant (1)
             mapping = {
                 "mel": 1,
                 "bcc": 1,
@@ -450,7 +449,7 @@ def run_pipeline(cfg):
     # ------------------------------------------------------
     # MODEL + OPTIMIZER + SCHEDULER
     # ------------------------------------------------------
-    print("\nLoading DenseNet201...")
+    print("\nLoading DenseNet121...")
     model = build_model()
     print("Model loaded ✔")
 
@@ -474,7 +473,7 @@ def run_pipeline(cfg):
     best_state = None
     history = []
 
-    print("\nTraining DenseNet201...\n")
+    print("\nTraining DenseNet121...\n")
 
     for epoch in range(EPOCHS):
         model.train()
@@ -515,20 +514,19 @@ def run_pipeline(cfg):
             f"PR-AUC={pr_auc:.4f}"
         )
 
-        # save best
         if pr_auc > best_pr_auc:
             best_pr_auc = pr_auc
             best_state = copy.deepcopy(model.state_dict())
             print("Best model updated ✔")
 
-    print("\nTraining Finished")
-    print("Best Validation PR-AUC:", best_pr_auc)
+    print("\nTraining finished")
+    print("Best PR-AUC:", best_pr_auc)
 
-    best_model_path = output_dir / "best_densenet201.pth"
+    best_model_path = output_dir / "best_densenet121.pth"
     torch.save(best_state, best_model_path)
 
     history_df = pd.DataFrame(history)
-    history_df.to_csv(output_dir / "training_history_densenet201.csv", index=False)
+    history_df.to_csv(output_dir / "training_history_densenet121.csv", index=False)
 
     # ------------------------------------------------------
     # LOAD BEST MODEL
@@ -536,7 +534,7 @@ def run_pipeline(cfg):
     model.load_state_dict(torch.load(best_model_path, map_location=DEVICE))
     model.eval()
 
-    print("\nBest DenseNet201 loaded.")
+    print("Best DenseNet121 loaded ✔")
 
     # ------------------------------------------------------
     # FINAL EVALUATION
@@ -559,7 +557,7 @@ def run_pipeline(cfg):
         "predicted_label": y_pred,
         "probability": y_probs
     })
-    pred_df.to_csv(output_dir / "densenet201_predictions.csv", index=False)
+    pred_df.to_csv(output_dir / "densenet121_predictions.csv", index=False)
     print("Saved predictions ✔")
 
     # ------------------------------------------------------
@@ -574,7 +572,7 @@ def run_pipeline(cfg):
     )
 
     report_df = pd.DataFrame(report).transpose()
-    report_df.to_csv(output_dir / "classification_report_densenet201.csv")
+    report_df.to_csv(output_dir / "classification_report_densenet121.csv")
 
     print("\nClassification report:")
     print(report_df)
@@ -585,7 +583,7 @@ def run_pipeline(cfg):
     cm = confusion_matrix(y_true, y_pred)
     save_confusion_matrix(
         cm,
-        output_dir / "confusion_matrix_densenet201.png",
+        output_dir / "confusion_matrix_densenet121.png",
         f"{cfg['name']} Confusion Matrix"
     )
 
@@ -595,7 +593,7 @@ def run_pipeline(cfg):
     auc_m, auc_b = save_roc_curve(
         y_true,
         y_probs,
-        output_dir / "roc_auc_densenet201.png",
+        output_dir / "roc_auc_densenet121.png",
         f"{cfg['name']} ROC Curve"
     )
 
@@ -607,7 +605,7 @@ def run_pipeline(cfg):
         recall,
         precision,
         pr_auc,
-        output_dir / "precision_recall_densenet201.png",
+        output_dir / "precision_recall_densenet121.png",
         f"{cfg['name']} Precision-Recall Curve"
     )
 
@@ -630,11 +628,11 @@ def run_pipeline(cfg):
     }
 
     summary_df = pd.DataFrame([summary])
-    summary_df.to_csv(output_dir / "final_metrics_summary_densenet201.csv", index=False)
-    save_json(summary, output_dir / "final_metrics_summary_densenet201.json")
+    summary_df.to_csv(output_dir / "final_metrics_summary_densenet121.csv", index=False)
+    save_json(summary, output_dir / "final_metrics_summary_densenet121.json")
 
     print("\n==============================")
-    print(f"{cfg['name']} DenseNet201 Results")
+    print(f"{cfg['name']} DenseNet121 Results")
     print("==============================")
     print(f"Balanced Accuracy : {bal_acc:.4f}")
     print(f"ROC-AUC Malignant : {auc_m:.4f}")
@@ -660,16 +658,16 @@ if __name__ == "__main__":
     if len(all_results) > 0:
         combined_df = pd.DataFrame(all_results)
 
-        combined_out = Path("./combined_densenet201_results")
+        combined_out = Path("./combined_densenet121_results")
         ensure_dir(combined_out)
 
         combined_df.to_csv(
-            combined_out / "all_datasets_summary_densenet201.csv",
+            combined_out / "all_datasets_summary_densenet121.csv",
             index=False
         )
         save_json(
             all_results,
-            combined_out / "all_datasets_summary_densenet201.json"
+            combined_out / "all_datasets_summary_densenet121.json"
         )
 
         print("\nCombined results saved ✔")
