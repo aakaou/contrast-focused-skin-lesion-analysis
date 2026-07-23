@@ -1,0 +1,4 @@
+## Packages and Citation
+### Packages 
+The repository should include a requirements.txt fome covering image processing, machine learning, segmentation, and explainability dependencies.
+
