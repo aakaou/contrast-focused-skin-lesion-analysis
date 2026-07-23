@@ -50,7 +50,7 @@ HAM 10000 contains seven diagnostic categories:
   
 ![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/e29ecee96d265824ed131484e653f30b97879259/schema%20of%20datasets.png)
 
-
+Use consistent naming for iamge and mask pairs and keep split definitions in CSV files. When training across both datasets, adding a source column such as HAM10000 or ISIC2024 helps with controlled analysis and stratified evaluation.
 
 ## Installation
 
@@ -71,27 +71,29 @@ source venv/bin/activate
 Install dependencies:
 
 ```bash
+pi install --upgrade pip
 pip install -r requirements.txt
 ```
-## Dataset
+## Framework Architecture
 
-This project uses the **HAM10000 dataset**, a widely used dermoscopic image dataset for skin lesion analysis. 
+The proposed framework follows a structured pipeline composed of preprocessing,
+segmentation, post-processing, classification, and explainability analysis. This type of
+sequential pipeline is consistent with published dermoscopic workflows that combine lesion
+localization with downstream prediction.
 
-Dataset source:
+## Main stages:
+* Input dermoscopic image
+* Four preprocessing pipelines
+* Sonar-inspired enhancement
+* UNet-based lesion segmentation
+* Morphological post-processing
+* Segmentation mask and overlay generation
+* Multi-class and binary classification
+* Grad-CAM explainability analysis
 
-https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
 
-The dataset contains **10,015 dermoscopic images** belonging to **seven diagnostic categories**:
 
-- Melanocytic nevi (NV)
-- Melanoma (MEL)
-- Benign keratosis (BKL)
-- Basal cell carcinoma (BCC)
-- Actinic keratoses (AKIEC)
-- Vascular lesions (VASC)
-- Dermatofibroma (DF)
-
-Images are used for preprocessing, segmentation, and classification experiments.
 
 ---
 ## Framework Architecture
