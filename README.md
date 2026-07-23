@@ -91,7 +91,7 @@ localization with downstream prediction.
 * Multi-class and binary classification
 * Grad-CAM explainability analysis
 
-![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/5a5a99295f75bbac403fe9eec97ff4b5f9c0c910/architecture_up.png)
 
 
 
