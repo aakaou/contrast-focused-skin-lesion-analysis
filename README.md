@@ -192,13 +192,47 @@ The framework supports:
 
 Using segmented lesions or lesion overlays as classifier inputs helps align diagnosis with the localized lesion region rather than unrelated background content. 
 
+## Explainability Analysis
 
+Grad-CAM is used to generate heatmaps from the last convolutional layer of each evaluated
+classification model. Grad-CAM has been used in skin lesion analysis studies to visualize the
+image regions that contribute most to a model prediction.
 
+The explainability analysis can include:
 
+*  Grad-CAM heatmap generation
+*  Overlay on the original dermoscopic image
+*  Comparison with lesion segmentation masks
+*  Overlap-based metrics such as IoU or Dice between thresholded Grad-CAM and lesion masks
+*  Percnetation of activation inside the lesion region
 
+this step helps assess whether the classifier attends to clinically meaningful lesion structures.
 
+## Evaluatioin Metrics
+### Segmentation
+* Dice coefficient
+* IoU / Jaccard index
+* Sensitivity
+* Accuracy
 
-## Classification Metrics
+### Classification
+* Precision
+* Recall
+* F1-score
+* Accuracy
+* AUC
+
+### Explainability
+* Heatmap-mask overlap
+* Activation percentage inside lesion area
+* Correlation or region-consistency measures when implemented
+
+These metrics make it possible to analyze the pipeline from three complementary perspectives: lesion localization, diagnosis, and interpretability.
+
+### How to Run Experiments
+
+The exact commands should match the real script names in the repository. The examples below provide a clear template for documenting training workflows.
+1. Run 
 
 The performance of each classification model is evaluated using several standard metrics commonly used in medical image analysis.
 
