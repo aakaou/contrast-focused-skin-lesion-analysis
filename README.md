@@ -1,6 +1,10 @@
 # Multi-Pipeline Preprocessing for Robust Skin Lesion Segmentation and Classification
-Contrast-focused deep learning framework for automated skin lesion analysis using the HAM10000 dataset. The project evaluates four image preprocessing pipelines combined with U-Net segmentation and 25 pretrained deep learning models to study their impact on multi-class skin lesion classification performance and diagnostic accuracy.
-
+Multi-Pipeline Preprocessing Framework for Robust Skin Lesion Segmentation and Classification using HAM10000
+and ISIC 2024 dermoscopic datasets. The project evaluates four image preprocessing pipelines
+combined with U-Net segmentation and a broad set of pretrained deep learning models to
+study their impact on lesion segmentation quality, multi-class classification performance, and
+diagnostic accuracy. The ISIC 2024 data is distributed through the official Kaggle competition
+page for the challenge [https://www.kaggle.com/competitions/isic-2024-challenge/data]
 
 This repository contains the implementation of the framework proposed in the paper:
 
