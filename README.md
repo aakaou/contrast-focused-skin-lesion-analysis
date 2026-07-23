@@ -255,3 +255,107 @@ Keeping dataset-specific test results separate for HAM10000 and ISIC2024 is reco
 performance changes can be attributed to preprocessing, architecture, or domain shi rather
 than to mixed evaluation settings.
 
+### Citation
+This repository contributes our research:
+```bash
+## References
+
+[1] A. Aakaou, K. Thurnhofer-Hemsi, and E. Domínguez, "Contrast-Focused Preprocessing for Skin Lesion Segmentation and Classification," in *Proc. International Work-Conference on the Interplay Between Natural and Artificial Computation (IWINAC)*, pp. 63--72, Springer, 2026.
+
+[2] J. Biro *et al*., "Analysis of the ISIC image datasets: Usage, benchmarks and recommendations," *Medical Image Analysis*, vol. 75, p. 102304, Jan. 2022.
+
+[3] P. Tschandl *et al*., "The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions," *Scientific Data*, vol. 5, p. 180161, Aug. 2018.
+
+[4] N. Codella *et al*., "Skin lesion analysis toward melanoma detection 2018: A challenge hosted by the ISIC," *arXiv:1902.03368*, 2019.
+
+[5] N. Codella *et al*., "Skin lesion analysis toward melanoma detection 2017: An ISIC challenge," *arXiv:1710.05006*, 2017.
+
+[6] N. Codella *et al*., "Skin lesion analysis toward melanoma detection 2016: An ISIC challenge," *arXiv:1601.02663*, 2016.
+
+[7] A. Esteva *et al*., "Dermatologist-level classification of skin cancer with deep neural networks," *Nature*, vol. 542, no. 7639, pp. 115--118, Feb. 2017.
+
+[8] O. Ronneberger, P. Fischer, and T. Brox, "U-Net: Convolutional networks for biomedical image segmentation," in *MICCAI*, Munich, Germany, 2015, pp. 234--241.
+
+[9] M. Tan and Q. V. Le, "EfficientNet: Rethinking model scaling for convolutional neural networks," in *ICML*, Long Beach, CA, USA, 2019, pp. 6105--6114.
+
+[10] G. Huang *et al*., "Densely connected convolutional networks," in *CVPR*, Honolulu, HI, USA, 2017, pp. 4700--4708.
+
+[11] K. He *et al*., "Deep residual learning for image recognition," in *CVPR*, Las Vegas, NV, USA, 2016, pp. 770--778.
+
+[12] S. Bibi *et al*., "MSRNet: Multiclass skin lesion recognition using additional residual block based fine-tuned deep models," *Diagnostics*, vol. 13, no. 19, p. 3063, 2023.
+
+[13] S. Jain *et al*., "Deep learning-based transfer learning for classification of skin cancer," *Sensors*, vol. 21, no. 23, p. 8142, Dec. 2021.
+
+[14] M. Fraiwan and E. Faouri, "On the automatic detection and classification of skin cancer using deep transfer learning," *Sensors*, vol. 22, no. 13, p. 4963, 2022.
+
+[15] J. Rashid *et al*., "Skin cancer disease detection using transfer learning technique," *Applied Sciences*, vol. 12, no. 11, p. 5714, 2022.
+
+[16] G. Alwakid *et al*., "Melanoma detection using deep learning-based classifications," *Healthcare*, vol. 10, no. 12, p. 2481, 2022.
+
+[17] I. Abunadi and E. M. Senan, "Deep learning and machine learning techniques of diagnosis dermoscopy images for early detection of skin diseases," *Electronics*, vol. 10, no. 24, p. 3158, 2021.
+
+[18] A. A. Adegun, S. Viriri, and M. H. Yousaf, "A probabilistic-based deep learning model for skin lesion segmentation," *Applied Sciences*, vol. 11, no. 7, p. 3025, Mar. 2021.
+
+[19] A. Mahbod *et al*., "The effect of region of interest crops and preprocessing on skin lesion classification performance," *Symmetry*, vol. 11, no. 8, p. 1042, Aug. 2019.
+
+[20] C. H. Lee, C. J. Li, and C. Y. Chen, "DullRazor: A software approach to hair removal from images," *Computers in Biology and Medicine*, vol. 27, no. 6, pp. 533--543, Nov. 1997.
+
+[21] K. Zuiderveld, "Contrast limited adaptive histogram equalization," in *Graphics Gems IV*, San Diego, CA, USA: Academic, 1994, pp. 474--485.
+
+[22] S. M. Pizer *et al*., "Adaptive histogram equalization and its variations," *Computer Vision, Graphics, Image Processing*, vol. 39, no. 3, pp. 355--368, Sep. 1987.
+
+[23] A. Telea, "An image inpainting technique based on the fast marching method," *Journal of Graphics Tools*, vol. 9, no. 1, pp. 23--34, 2004.
+
+[24] M. E. Celebi *et al*., "Lesion border detection in dermoscopy images," *Computerized Medical Imaging and Graphics*, vol. 33, no. 2, pp. 148--153, Mar. 2009.
+
+[25] M. Combalia *et al*., "Validation of artificial intelligence prediction models for skin cancer diagnosis using dermoscopy images," *JAMA Dermatology*, vol. 157, no. 7, pp. 800--807, Jul. 2021.
+
+[26] V. Rotemberg *et al*., "A patient-centric dataset of images and metadata for identifying melanomas using clinical context," *Scientific Data*, vol. 8, no. 1, p. 34, Jan. 2021.
+
+[27] F. Alenezi, A. Armghan, and K. Polat, "A novel multi-task learning network based on melanoma segmentation and classification," *Diagnostics*, vol. 13, no. 2, p. 262, 2023.
+
+[28] M. A. Khan *et al*., "Skin lesion segmentation and multiclass classification using deep learning features," *Mathematics*, vol. 11, no. 1, p. 247, 2023.
+
+[29] M. Z. Ur Rehman *et al*., "Classification of skin cancer lesions using explainable deep learning," *Sensors*, vol. 22, no. 18, p. 6915, 2022.
+
+[30] M. H. Strzelecki *et al*., "Skin lesion detection algorithms in whole body images," *Sensors*, vol. 21, no. 19, p. 6639, 2021.
+
+[31] P. Jayaraman *et al*., "Wavelet-based classification of enhanced melanoma skin lesions through deep neural architectures," *Information*, vol. 13, no. 12, p. 583, 2022.
+
+[32] P. Velez *et al*., "Does a previous segmentation improve the automatic detection of basal cell carcinoma using deep neural networks?," *Applied Sciences*, vol. 12, no. 4, p. 2092, 2022.
+
+[33] M. U. Ali *et al*., "Enhancing skin lesion detection: A multistage multiclass convolutional neural network-based framework," *Bioengineering*, vol. 10, no. 12, p. 1430, 2023.
+
+[34] T. G. Debelee *et al*., "Skin lesion classification and detection using machine learning techniques: A systematic review," *Diagnostics*, vol. 13, no. 19, p. 3147, 2023.
+
+[35] K. Behara, E. Bhero, and J. T. Agee, "An improved skin lesion classification using a hybrid approach with active contour snake model and lightweight attention-guided capsule networks," *Diagnostics*, vol. 14, no. 6, p. 636, 2024.
+
+[36] M. Obayya *et al*., "Internet of things-assisted smart skin cancer detection using metaheuristics with deep learning model," *Cancers*, vol. 15, no. 20, p. 5016, 2023.
+
+[37] X. Yang *et al*., "A novel multi-task deep learning model for skin lesion segmentation and classification," *arXiv:1703.01025*, 2017.
+
+[38] N. R. Kurtansky *et al*., "The SLICE-3D dataset: 400,000 skin lesion image crops extracted from 3D TBP for skin cancer detection," *Scientific Data*, vol. 11, no. 1, p. 884, 2024.
+
+[39] Y. Li and L. Shen, "Skin lesion analysis towards melanoma detection using deep learning network," *Sensors*, vol. 18, no. 2, p. 556, 2018.
+
+[40] H. El-Khatib, D. Popescu, and L. Ichim, "Deep learning-based methods for automatic diagnosis of skin lesions," *Sensors*, vol. 20, no. 6, p. 1753, 2020.
+
+[41] American Cancer Society, "Cancer Facts & Figures 2025," Atlanta: American Cancer Society, 2025.
+
+[42] M. A. Albahar, "Skin lesion classification using convolutional neural network with novel regularizer," *IEEE Access*, vol. 7, pp. 38306--38313, 2019.
+
+[43] M. A. Khan, M. Y. Javed, M. Sharif, T. Saba, and A. Rehman, "Multi-model deep neural network based features extraction and optimal selection approach for skin lesion classification," in *Proc. 2019 International Conference on Computer and Information Sciences (ICCIS)*, 2019, pp. 1--7.
+
+[44] A. Mahbod, G. Schaefer, I. Ellinger, R. Ecker, A. Pitiot, and C. Wang, "Fusing fine-tuned deep features for skin lesion classification," *Computerized Medical Imaging and Graphics*, vol. 71, pp. 19--29, 2019.
+
+[45] K. P. Arjun, K. Sampath Kumar, R. K. Dhanaraj, V. Ravi, and T. Ganesh Kumar, "Optimizing time prediction and error classification in early melanoma detection using a hybrid RCNN-LSTM model," *Microscopy Research and Technique*, vol. 87, no. 8, pp. 1789--1809, 2024.
+
+[46] M. Shakya, R. Patel, and S. Joshi, "A comprehensive analysis of deep learning and transfer learning techniques for skin cancer classification," *Scientific Reports*, vol. 15, no. 1, Art. no. 4633, 2025.
+
+[47] K. M. Hosny, M. A. Kassem, and M. M. Fouad, "Classification of skin lesions using transfer learning and augmentation with AlexNet," *PLOS ONE*, vol. 14, no. 5, Art. no. e0217293, 2019.
+
+[48] M. Z. Ur Rehman, F. Ahmed, S. A. Alsuhibany, S. S. Jamal, M. Z. Ali, and J. Ahmad, "Classification of skin cancer lesions using explainable deep learning," *Sensors*, vol. 22, no. 18, Art. no. 6915, 2022.
+
+[49] S. Bibi, M. A. Khan, J. H. Shah, R. Damaševičius, A. Alasiry, M. Marzougui, M. Alhaisoni, and A. Masood, "MSRNet: Multiclass skin lesion recognition using additional residual block based fine-tuned deep models information fusion and best feature selection," *Diagnostics*, vol. 13, no. 19, Art. no. 3063, 2023.
+```
+
