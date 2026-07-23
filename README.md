@@ -93,20 +93,15 @@ localization with downstream prediction.
 
 ![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/5a5a99295f75bbac403fe9eec97ff4b5f9c0c910/architecture_up.png)
 
-
-
----
-## Framework Architecture
-
-The proposed framework follows a structured pipeline:
-
-![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
+## Pipeline design
+The framework studies how contrast-focused preprocessing changes the visibility of lesion
+structures before segmentation and classification. Explainability is used to verify whether
+classification models attend to lesion regions rather than irrelevant background patterns,
+which is aligned with Grad-CAM-based interpretation practices in skin lesion analysis.
 
 ## Preprocessing Pipelines
 
-Four preprocessing pipelines are evaluated. The figure below shows the preprocessing steps for each pipeline applied to the same sample image:
-
-![Preprocessing Pipelines Comparison](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/f22579e3b6adebcea28066182f0aaadd977861db/preprocessing_steps_pipelines.png)
+Four preprocessing pipelines are evaluated on the dermoscopic images before segmentation and classification.
 
 ### Pipeline 1 – Baseline
 - Image resizing
@@ -135,7 +130,7 @@ Four preprocessing pipelines are evaluated. The figure below shows the preproces
 - CLAHE enhancement
 - Intensity normalization
 
-Pipeline 4 produced the **best overall classification performance**.
+Pipeline 4 produced  the strongest overall classification behavior in the current experimental setting described in the repository.
 
 ## Segmentation Model
 
@@ -143,82 +138,65 @@ Lesion segmentation is performed using a **U-Net convolutional neural network**,
 
 ### Segmentation Example
 
-The figure below illustrates the segmentation process, including the transformed input image, predicted lesion mask, and the final overlay of the segmented lesion.
-
-![Segmentation Example](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/7e46f5ea5e86c54fde2cc0bde2302a90dd286bd1/seg_up_.png)
-
-### Architecture
+Lesion segmentation is performed using a U-Net architecture. U-Net remains a widely used
+segmentation model in medical imaging because its encoder-decoder structure and skip
+connections preserve both semantic and spatial information needed for fine boundary
+delineation.
 
 The segmentation network follows an **encoder–decoder structure**:
 
 - **Encoder:** Extracts hierarchical features from dermoscopic images using successive convolution and pooling layers.
+- **Bottleneck:** captures compact high-level lesion representations.
 - **Decoder:** Reconstructs the segmentation mask by progressively upsampling feature maps.
 - **Skip Connections:** Direct links between encoder and decoder layers preserve high-resolution spatial information and improve lesion boundary detection.
 
 ### Additional Enhancements
 
-To improve segmentation performance on dermoscopic images, the framework includes several enhancements:
+The segmentation stage also includes:
 
 - **Sonar-inspired Background Transformation:** Enhances the contrast between lesion regions and surrounding skin, helping the network better identify lesion boundaries.
 - **Morphological Post-processing:** Applies operations such as opening, closing, and small-region removal to refine predicted masks and reduce segmentation noise.
 
-### Evaluation Metrics
+Segmentation quality is evaluated with:
+* Dice coefficient
+* Intersection over Union (IoU)
+* Jaccard index
+* Sensitivity
+* Accuracy
 
-Segmentation performance is evaluated using the following metrics:
+These metrics provide a complementary view of overlap quality and pixel-wise lesion recovery performance.
 
-- **Dice Coefficient:** Measures the overlap between predicted masks and ground truth masks.
-- **Intersection over Union (IoU):** Ratio between the intersection and the union of predicted and actual lesion regions.
-- **Jaccard Index:** A similarity metric closely related to IoU for segmentation quality assessment.
-- **Sensitivity:** Measures the proportion of actual lesion pixels correctly identified by the model.
-- **Pixel Accuracy:** The proportion of correctly classified pixels over the total number of pixels.
+### Classification Models
+To evaluate the effect of preprocessing on diagnosis, the framework compares a large set of
+pretrained deep learning architectures. Published work in skin lesion analysis commonly
+benchmarks multiple CNN backbones because feature extraction behavior can vary
+substantially across model families.
 
+The repository description refers to evaluation across pretrained models from the following families:
 
-These metrics provide a comprehensive evaluation of the segmentation model's ability to accurately delineate lesion boundaries before the classification stage.
-
-### Segmentation Performance Analysis
-
-The figure below presents a statistical analysis of the segmentation performance obtained using **Pipeline 4**. It summarizes the distribution of key evaluation metrics across the dataset.
-
-![Segmentation Metrics Distribution](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/25d8efcb39e6aefa0f375b06e441271602e9fda3/graph_metrics_seg_update.png)
-
-## Classification Models
-
-To evaluate the impact of preprocessing strategies on diagnostic performance, the framework tests **25 pretrained deep learning models** across the four preprocessing pipelines. These models include classical convolutional neural networks, lightweight architectures, and modern deep learning architectures.
-
-### Evaluated Models
-
-The following pretrained architectures were used for multi-class skin lesion classification:
-
-- VGG16
-- VGG19
-- ResNet18
-- ResNet34
-- ResNet50
-- ResNet101
-- ResNet152
-- DenseNet121
-- DenseNet161
-- DenseNet169
-- DenseNet201
+- VGG (16, 19)
+- ResNet (18, 34, 50, 101, 152)
+- DenseNet (121, 169, 201)
 - InceptionV3
 - InceptionResNetV2
 - Xception
-- MobileNetV1
-- MobileNetV2
+- MobileNet (V1, V2)
 - MobileNetV3 Small
 - MobileNetV3 Large
-- EfficientNetB0
-- EfficientNetB1
-- EfficientNetB2
-- EfficientNetB3
-- EfficientNetB4
-- EfficientNetB5
-- EfficientNetB6
-- EfficientNetB7
+- EfficientNet (B0, B1, B2, B3, B4, B5, B6, B7)
 
-These models were fine-tuned on dermoscopic images from the **HAM10000 dataset** to perform **seven-class skin lesion classification**.
+## Tasks
+The framework supports:
+*  Multi-class classification for lesion category prediction.
+*  Binary classification for benign versus malignant prediction when binary labels are prepared.
 
----
+Using segmented lesions or lesion overlays as classifier inputs helps align diagnosis with the localized lesion region rather than unrelated background content. 
+
+
+
+
+
+
 
 ## Classification Metrics
 
