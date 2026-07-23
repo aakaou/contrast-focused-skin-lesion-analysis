@@ -232,79 +232,26 @@ These metrics make it possible to analyze the pipeline from three complementary 
 ### How to Run Experiments
 
 The exact commands should match the real script names in the repository. The examples below provide a clear template for documenting training workflows.
-1. Run 
+1. Run
+```bash
+# run file of segmentation 
+python u_net_segmentation.py
+# run file of classification
+python classification.py
+# generate grad cam explanations
+python generate_gradcam.py
+```
+### Reproducibility Notes
+For reproducible experiments, document the following in the final repository version:
+* Python version
+* CUDA version
+* Deep learning framwork version
+* Random seed
+* Dataset split files
+* Trained checkpoint names
+* output directories for masks, predictions, and Grad-CAM results
 
-The performance of each classification model is evaluated using several standard metrics commonly used in medical image analysis.
+Keeping dataset-specific test results separate for HAM10000 and ISIC2024 is recommended so
+performance changes can be attributed to preprocessing, architecture, or domain shi rather
+than to mixed evaluation settings.
 
-### Precision
-
-Precision measures the proportion of correctly predicted positive samples among all predicted positive samples.
-
-$$
-Precision = \frac{TP}{TP + FP}
-$$
-
-Where:
-
-- **TP** = True Positives  
-- **FP** = False Positives  
-
-A high precision indicates that the model produces **few false positive predictions**, meaning that predicted lesion classes are more likely to be correct.
-
----
-
-### Recall (Sensitivity)
-
-Recall measures the proportion of actual positive samples that are correctly detected by the model.
-
-$$
-Recall = \frac{TP}{TP + FN}
-$$
-
-Where:
-
-- **TP** = True Positives  
-- **FN** = False Negatives  
-
-High recall is particularly important in medical diagnosis because it ensures that **most real lesion cases are detected by the system**.
-
----
-
-### F1-score
-
-The F1-score is the **harmonic mean of precision and recall**, providing a balanced evaluation when both false positives and false negatives must be considered.
-
-$$
-F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
-$$
-
-This metric is especially useful when the dataset contains **class imbalance**, which is common in medical imaging datasets such as HAM10000.
-
----
-
-### Accuracy
-
-Accuracy measures the proportion of correctly classified samples among all predictions.
-
-$$
-Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
-$$
-
-Where:
-
-- **TP** = True Positives  
-- **TN** = True Negatives  
-- **FP** = False Positives  
-- **FN** = False Negatives  
-
-Accuracy provides a general indication of model performance, although it may not fully reflect classification quality in imbalanced datasets. Therefore, additional metrics such as **precision, recall, and F1-score** are also considered.
-
----
-
-## Experimental Comparison
-
-The figure below compares the performance of the four preprocessing pipelines across all classification models using the four evaluation metrics.
-
-![Pipeline Comparison](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/01f5f75c7d2feb67b632df6b07cca5e8f8897f4b/comparison_pipelines.png)
-
-The results show that **Pipeline 4 consistently achieves higher precision, recall, F1-score, and accuracy across most models**, with **EfficientNetB7 demonstrating competitive overall performance**.
