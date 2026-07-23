@@ -6,26 +6,50 @@ study their impact on lesion segmentation quality, multi-class classification pe
 diagnostic accuracy. The ISIC 2024 data is distributed through the official Kaggle competition
 page for the challenge [https://www.kaggle.com/competitions/isic-2024-challenge/data]
 
-This repository contains the implementation of the framework proposed in the paper:
-
-**“Contrast-Focused Preprocessing for Skin Lesion Segmentation and Classification.”**
-
-The framework evaluates the impact of **four preprocessing pipelines** on segmentation quality and multi-class classification performance using the **HAM10000 dataset**.
+This repository contains the implementation of the framework proposed in the paper
+“Multi-Pipeline Preprocessing for Robust Skin Lesion Segmentation and Classification.” The
+framework is designed to measure how preprocessing affects segmentation quality and
+classification performance across different datasets and model families
 
 ---
 
 ## Overview
+Skin lesion analysis benefits from early and accurate automated assessment, especially when
+segmentation and classification are studied jointly in a consistent experimental pipeline. Prior
+research also highlights the importance of combining lesion localization and classification in
+dermoscopic image analysis workflows.
 
-Skin cancer is one of the most common cancers worldwide. Early and accurate detection is essential for improving patient outcomes.
+This project proposes a multi-stage deep learning framework that integrates:
+1. Image preprocessing
+2. Lesion segmentation
+3. Post-processing refinement
+4. Downstream classification
+5. Explainability analysis
 
-This project proposes a **multi-stage deep learning pipeline** that integrates:
+The main objective is to analyse how different preprocessing strategies influence segmentation accuracy, classification performance, and model interpretability.
 
-1. Image preprocessing  
-2. Lesion segmentation   
-3. Post-processing refinement  
-4. Multi-model classification  
+## Datasets
+This project uses two dermoscopic datasets:
+* HAM10000: a dermoscopic image dataset  containing 10,015 images across seven diagnostic categories.
+* ISIC 2024:  the official challenge dataset provided through the Kaggle competition ISIC 2024 - Skin Cancer Detection with 3D-TBP.
 
-The goal is to analyze how different preprocessing strategies influence segmentation accuracy and classification performance.
+## Dataset sources
+* HAM 10000(Kaggle): [https://kaggle/input/ham10000-dataset]
+
+* ISIC 2024(Kaggle competition): [https://www.kaggle.com/competitions/isic-2024-challenge/data]
+
+## HAM10000 classes
+HAM 10000 contains seven diagnostic categories:
+* Melanocytic nevi (NV)
+* Melanoma (MEL)
+* Benign keratosis (BKL)
+* Basal cell carcinoma (BCC)
+* Actinic keratoses (AKIEC)
+* Vascular lesions (VASC)
+* Dermatofibroma (DF)
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
+
+
 
 ## Installation
 
