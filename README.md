@@ -47,7 +47,7 @@ HAM 10000 contains seven diagnostic categories:
 * Actinic keratoses (AKIEC)
 * Vascular lesions (VASC)
 * Dermatofibroma (DF)
-![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/36eaaed9d7f8b0f4c6ba6069a0e5272ff7f632d3/architecture_up.png)
+![image alt]()
 
 
 
