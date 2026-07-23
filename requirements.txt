@@ -1,4 +1,39 @@
-## Packages and Citation
+## Packages 
 ### Packages 
 The repository should include a requirements.txt fome covering image processing, machine learning, segmentation, and explainability dependencies.
 
+```bash
+# Core scientific computing
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+joblib>=1.3
+PyYAML>=6.0
+
+# Machine learning and evaluation
+scikit-learn>=1.3
+
+# Image processing and augmentation
+scikit-image>=0.21
+opencv-python>=4.8
+Pillow>=10.0
+imageio>=2.31
+albumentations>=1.4
+
+# Visualization and monitoring
+matplotlib>=3.7
+seaborn>=0.12
+tqdm>=4.66
+
+# Deep learning
+torch>=2.2
+torchvision>=0.17
+torchaudio>=2.2
+timm>=0.9.12
+segmentation-models-pytorch>=0.3.3
+pytorch-grad-cam>=1.5.0
+
+# Optional notebook support
+jupyter>=1.0
+ipykernel>=6.29
+```
