@@ -131,7 +131,7 @@ Four preprocessing pipelines are evaluated on the dermoscopic images before segm
 - Intensity normalization
 
 Pipeline 4 produced  the strongest overall classification behavior in the current experimental setting described in the repository.
-![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/e070518686b903b02247c0976aa7abd77222091b/architecture_up_with_gradcam.png)
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/e680164b6b70a445c9c92da3100e6a9ddaeb0d86/processing_images_schematic.png)
 
 ## Segmentation Model
 
