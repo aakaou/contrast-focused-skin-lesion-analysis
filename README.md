@@ -91,7 +91,7 @@ localization with downstream prediction.
 * Multi-class and binary classification
 * Grad-CAM explainability analysis
 
-![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/5a5a99295f75bbac403fe9eec97ff4b5f9c0c910/architecture_up.png)
+![image alt](https://github.com/aakaou/contrast-focused-skin-lesion-analysis/blob/e070518686b903b02247c0976aa7abd77222091b/architecture_up_with_gradcam.png)
 
 ## Pipeline design
 The framework studies how contrast-focused preprocessing changes the visibility of lesion
